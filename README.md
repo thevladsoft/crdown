@@ -1,4 +1,4 @@
-# Crunchyroll Downloader
+# Crunchyroll video downloader
 ## Download your favorite anime from Crunchyroll
 
 ### Introduction
