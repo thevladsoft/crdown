@@ -1,5 +1,7 @@
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-import cookielib,lxml,os,re,sys,urllib,urllib2
+
+import cookielib,lxml,os,re,sys,urllib,urllib2,shutil
 from bs4 import BeautifulSoup
 from ConfigParser import ConfigParser
 from crunchyDec import crunchyDec
@@ -131,115 +133,115 @@ def vidurl(url): #experimental, although it does help if you only know the progr
 		print url
 		return url
 
-#----------
-print 'Booting up...'
-config()
-page_url = sys.argv[1]
-os.system('title '+page_url.replace('http://www.crunchyroll.com/',''))
-#http://www.crunchyroll.com/miss-monochrome-the-animation/episode-2-645085
-#page_url = 'http://www.crunchyroll.com/media-645085'
-if page_url.startswith('www'):
-	page_url = 'http://'+page_url
-try:
-	int(page_url)
-	page_url = 'http://www.crunchyroll.com/media-'+page_url
-except ValueError:
+def main():
+	print 'Booting up...'
+	config()
+	page_url = sys.argv[1]
+	#http://www.crunchyroll.com/miss-monochrome-the-animation/episode-2-645085
+	#page_url = 'http://www.crunchyroll.com/media-645085'
+	if page_url.startswith('www'):
+		page_url = 'http://'+page_url
 	try:
-		int(page_url[-6:])
+		int(page_url)
+		page_url = 'http://www.crunchyroll.com/media-'+page_url
 	except ValueError:
-		page_url = vidurl(page_url)
-os.system('title '+page_url.replace('http://www.crunchyroll.com/',''))
-playerRev(page_url)
-media_id = page_url[-6:]
-xmlconfig = BeautifulSoup(getXML('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
-#xmlmeta = BeautifulSoup(getXML('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
-if '<code>4</code>' in xmlconfig: #this is in VideoEncode_GetStreamInfo, but better to nip it in the bud early on
-	print 'Video not available in your region.'
-	sys.exit()
-vid_id = xmlconfig.find('media_id').string
-
-#----------
-
-title = unicode((re.findall('<title>(.+?)</title>',html).pop().replace('Crunchyroll - Watch ','')),encoding='utf-8')
-title = unidecode(title).replace('/',' - ').replace(':','-').replace('?','.').replace('"','\'').strip()
-
-#----------
-
-# normally 'RpcApiVideoEncode_GetStreamInfo' but some first episodes f*ck up and show 1080p no matter the settings
-#xmlstream = BeautifulSoup(getXML('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
-try:
-	host = xmlconfig.find('host').string
-except AttributeError:
-	print 'Downloading 2 minute preview.'
-#	xmlmeta = BeautifulSoup(getXML('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
-	media_id = xmlconfig.find('media_id').string
-	xmlconfig = BeautifulSoup(getXML('RpcApiVideoEncode_GetStreamInfo', media_id), 'xml')
-	host = xmlconfig.find('host').string
-
-host_grr = re.search('fplive\.net', host) #why host_grr? well, there was a time when fplive videos couldn't be downloaded, so...
-if host_grr:
-	url1 = re.findall('.+/c[0-9]+', host).pop()
-	url2 = re.findall('c[0-9]+\?.+', host).pop()
-else:
-	url1 = re.findall('.+/ondemand/', host).pop()
-	url2 = re.findall('ondemand/.+', host).pop()
-file = xmlconfig.find('file').string
-
-#----------
-
-xmllist = unidecode(unicode(getXML('RpcApiSubtitle_GetListing', media_id), 'utf-8')) #could we get rid of unidecode?
-xmllist = xmllist.replace('><','>\n<')
-
-if '<media_id>None</media_id>' in xmllist:
-	print 'The video has hardcoded subtitles.'
-	hardcoded = True
-else:
-	try:
-		sub_id = re.findall("id=([0-9]+)' title='.+"+lang.replace('(','\(').replace(')','\)')+"'", xmllist).pop()
-		hardcoded = False
-	except IndexError:
 		try:
-			sub_id = re.findall("id\=([0-9]+)' title='.+English", xmllist).pop() #default back to English
-			print 'Language not found, reverting to English'
+			int(page_url[-6:])
+		except ValueError:
+			page_url = vidurl(page_url)
+	playerRev(page_url)
+	media_id = page_url[-6:]
+	xmlconfig = BeautifulSoup(getXML('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
+	#xmlmeta = BeautifulSoup(getXML('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
+	if '<code>4</code>' in xmlconfig: #this is in VideoEncode_GetStreamInfo, but better to nip it in the bud early on
+		print 'Video not available in your region.'
+		sys.exit()
+	vid_id = xmlconfig.find('media_id').string
+
+	#----------
+
+	title = unicode((re.findall('<title>(.+?)</title>',html).pop().replace('Crunchyroll - Watch ','')),encoding='utf-8')
+	title = unidecode(title).replace('/',' - ').replace(':','-').replace('?','.').replace('"','\'').strip()
+
+	#----------
+
+	# normally 'RpcApiVideoEncode_GetStreamInfo' but some first episodes f*ck up and show 1080p no matter the settings
+	#xmlstream = BeautifulSoup(getXML('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
+	try:
+		host = xmlconfig.find('host').string
+	except AttributeError:
+		print 'Downloading 2 minute preview.'
+	#	xmlmeta = BeautifulSoup(getXML('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
+		media_id = xmlconfig.find('media_id').string
+		xmlconfig = BeautifulSoup(getXML('RpcApiVideoEncode_GetStreamInfo', media_id), 'xml')
+		try:
+			host = xmlconfig.find('host').string
+		except AttributeError:
+			sys.exit(xmlconfig.find('msg').string)
+
+	host_grr = re.search('fplive\.net', host) #why host_grr? well, there was a time when fplive videos couldn't be downloaded, so...
+	if host_grr:
+		url1 = re.findall('.+/c[0-9]+', host).pop()
+		url2 = re.findall('c[0-9]+\?.+', host).pop()
+	else:
+		url1 = re.findall('.+/ondemand/', host).pop()
+		url2 = re.findall('ondemand/.+', host).pop()
+	file = xmlconfig.find('file').string
+
+	#----------
+
+	xmllist = unidecode(unicode(getXML('RpcApiSubtitle_GetListing', media_id), 'utf-8')) #could we get rid of unidecode?
+	xmllist = xmllist.replace('><','>\n<')
+
+	if '<media_id>None</media_id>' in xmllist:
+		print 'The video has hardcoded subtitles.'
+		hardcoded = True
+	else:
+		try:
+			sub_id = re.findall("id=([0-9]+)' title='.+"+lang.replace('(','\(').replace(')','\)')+"'", xmllist).pop()
 			hardcoded = False
 		except IndexError:
-			print 'The video\'s subtitles cannot be found, or are region-locked.'
-			hardcoded = True
+			try:
+				sub_id = re.findall("id\=([0-9]+)' title='.+English", xmllist).pop() #default back to English
+				print 'Language not found, reverting to English'
+				hardcoded = False
+			except IndexError:
+				print 'The video\'s subtitles cannot be found, or are region-locked.'
+				hardcoded = True
 
-if hardcoded == False:
-	xmlsub = getXML('RpcApiSubtitle_GetXml', sub_id)
-	formattedSubs = crunchyDec().returnSubs(xmlsub)
-	try:
-		subfile = open(title+'.ass', 'wb')
-	except IOError:
-		title = title.split(' - ', 1)[0] #episode name too long, splitting after episode number
-		subfile = open(title+'.ass', 'wb')
-	subfile.write(formattedSubs.encode('utf-8-sig'))
-	subfile.close()
-	os.system('move /Y "'+title+'.ass" ".\export\"')
+	if hardcoded == False:
+		xmlsub = getXML('RpcApiSubtitle_GetXml', sub_id)
+		formattedSubs = crunchyDec().returnSubs(xmlsub)
+		try:
+			subfile = open(title+'.ass', 'wb')
+		except IOError:
+			title = title.split(' - ', 1)[0] #episode name too long, splitting after episode number
+			subfile = open(title+'.ass', 'wb')
+		subfile.write(formattedSubs.encode('utf-8-sig'))
+		subfile.close()
+		#shutil.move(title+'.ass', './export')
 
-#---------------
+	#---------------
 
-print 'Downloading video...'
-cmd = '.\\video-engine\\rtmpdump -r "'+url1+'" -a "'+url2+'" -f "WIN 11,8,800,50" -m 15 -W "http://static.ak.crunchyroll.com/flash/'+player_revision+'/ChromelessPlayerApp.swf" -p "'+page_url+'" -y "'+file+'" -o "'+title+'.flv"'
-os.system(cmd)
+	print 'Downloading video...'
+	cmd = 'rtmpdump -r "'+url1+'" -a "'+url2+'" -f "WIN 11,8,800,50" -m 15 -W "http://static.ak.crunchyroll.com/flash/'+player_revision+'/ChromelessPlayerApp.swf" -p "'+page_url+'" -y "'+file+'" -o "'+title+'.flv"'
 
-if os.stat(title+'.flv').st_size == 0:
-	print '\r\nVideo failed to download, trying again. (1/3)'
-	os.system(cmd)
-	if os.stat(title+'.flv').st_size == 0:
-		print '\r\nVideo failed to download, trying again. (2/3)'
+	for i in range(4):
 		os.system(cmd)
 		if os.stat(title+'.flv').st_size == 0:
-			print '\r\nVideo failed to download, trying again. (3/3)'
-			os.system(cmd)
-			if os.stat(title+'.flv').st_size == 0:
-				print '\r\nVideo failed to download. Writing error...'
+			if i == 3: 
 				if os.path.exists('error.log'):
 					file = open('error.log', 'a')
 				else:
 					file = open('error.log', 'w')
 				file.write(page_url+'\n')
 				file.close()
-				os.system('del ".\\'+title+'.flv"')
-				sys.exit()
+				os.remove(title+'.flv')
+				sys.exit('Video failed to download. Check error.log for details...')
+			else:
+				print 'Video failed to download, trying again. ({}/3)'.format(i)
+		else:
+			break
+
+if __name__ == '__main__':
+	main()
