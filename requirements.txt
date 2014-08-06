@@ -1,0 +1,4 @@
+Unidecode==0.04.16
+beautifulsoup4==4.3.2
+cryptopy==1.2.5
+lxml==3.3.5
