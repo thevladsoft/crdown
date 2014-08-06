@@ -243,7 +243,7 @@ def main():
 			subfile = open(title+'.ass', 'wb')
 		subfile.write(formattedSubs.encode('utf-8-sig'))
 		subfile.close()
-		#shutil.move(title+'.ass', './export')
+		shutil.move(title+'.ass', './export')
 
 	#---------------
 
@@ -265,6 +265,7 @@ def main():
 			else:
 				print 'Video failed to download, trying again. ({}/3)'.format(i)
 		else:
+			shutil.move(title+'.flv', './export')
 			break
 
 if __name__ == '__main__':

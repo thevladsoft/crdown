@@ -15,7 +15,7 @@ This will generate a 'cookies.txt' file, containing you account information. Aft
 $ python2 crdown.py http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285
 ```
 
-That's it. You can change the quality and language subtitle if you want editing the 'settings.ini' file.
+That's it. You will see .flv and .ass files (if the subtitle is available) in the 'export/' directoy if all goes well. You can change the quality and language subtitle if you want editing the 'settings.ini' file.
 
 ### How to install
 

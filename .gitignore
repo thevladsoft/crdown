@@ -5,3 +5,6 @@ __pycache__/
 # Ignore backup/swap files
 *.swp
 *~
+
+# Ignore export/ folder
+export/
