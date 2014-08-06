@@ -6,5 +6,8 @@ __pycache__/
 *.swp
 *~
 
+# Ignore cookies.txt file
+cookies.txt
+
 # Ignore export/ folder
 export/
