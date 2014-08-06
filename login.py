@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 import cookielib, urllib2, urllib, fileinput, sys, re
 
 def login(username,password):
