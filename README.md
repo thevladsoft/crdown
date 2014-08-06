@@ -10,12 +10,19 @@ It's really simple to use. First you need to (optionally but recommended) login 
 $ python2 login.py
 ```
 
-This will generate a 'cookies.txt' file, containing you account information. After that, you should go to [Crunchyroll website][2], copy any Anime link you want (for example (this one)[http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285]) and use the following command to start the download:
+This will generate a 'cookies.txt' file, containing you account information. You can change the quality and language subtitle if you want editing the 'settings.ini' file.
+
+After that, you should go to [Crunchyroll website][2], copy any Anime link you want (for example (this one)[http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285]) and use the following command to start the download:
 ```
 $ python2 crdown.py http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285
 ```
 
-That's it. You will see .flv and .ass files (if the subtitle is available) in the 'export/' directoy if all goes well. You can change the quality and language subtitle if you want editing the 'settings.ini' file.
+That's it. You will see .flv and .ass files (if the subtitle is available) in the 'export/' directoy if all goes well. If you want to convert the .flv/.ass files in a nicer .mkv containerbash co, you will need some aditional dependencies (listed in "How to install" section) so you can run the following command:
+```
+$ bash convert.sh
+```
+
+**WARNING**: for now this will delete the original .flv/.ass files. You can comment the line on 'convert.sh' script that do it if you don't want this behavior.
 
 ### How to install
 
@@ -40,6 +47,12 @@ $ source bin/activate # You should run this command after every new terminal you
 $ pip install http://sourceforge.net/projects/cryptopy/files/latest/download
 $ pip install -r requirements.txt
 $ python crdown.py URL
+```
+
+**Aditional dependencies to 'convert.sh' script**: you will need 'mono' and 'mkvtoolnix' installed to run the MKV conversion script. Some distribution commands to install both:
+```
+$ sudo apt-get install mono-complete mkvtoolnix # Debian/Ubuntu and derivates
+$ sudo pacman -S mono mkvtoolnix # Arch Linux
 ```
 
 [1]: http://www.darkztar.com/forum/showthread.php?219034-Ripping-videos-amp-subtitles-from-Crunchyroll-(noob-friendly)
