@@ -11,20 +11,11 @@ def login(username,password):
 	req = urllib2.Request(url, urllib.urlencode(data))
 	res = opener.open(req)
 
-
-try:
-	with open('cookies.txt'): pass
-except IOError:
-	cookie_jar = cookielib.MozillaCookieJar('cookies.txt')
-	cookie_jar.save()
-if sys.argv[1] == 'no':
-	print 'No cookies created.'
-	sys.exit()
-else:
+def main():
 	cookie_jar = cookielib.MozillaCookieJar('cookies.txt')
 	cookie_jar.load()
-	username = raw_input('Username: ')
-	password = raw_input('Password: ')
+	username = raw_input('Crunchyroll username: ')
+	password = raw_input('Crunchyroll password: ')
 	login(username,password)
 	opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
 	opener.addheaders =[('User-Agent','Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0'),
@@ -44,3 +35,6 @@ else:
 	else:
 		print 'Login failed.'
 		sys.exit()
+
+if __name__ == '__main__':
+	main()

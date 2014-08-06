@@ -9,39 +9,60 @@ from unidecode import unidecode
 from urlparse import urlparse
 # I hate unicode, bring on python 3.3
 
+usage="""Crunchyroll Downloader
+
+usage: {} URL
+
+Download video from URL on current directory. This will generate both a .flv
+video file and a .ass subtitle file.
+
+Optional: if a 'cookies.txt' file is presented on the current directory, this
+program will try to authenticate on your Crunchyroll account. To generate a
+valid 'cookies.txt' file, run 'login.py' first.
+""".format(sys.argv[0])
+
 def config ():
-	global video_format
-	global resolution
 	config = ConfigParser()
 	config.read('settings.ini')
-	quality = config.get('SETTINGS', 'video_quality')
-	if quality == 'android': #doesn't work?
-		video_format = '107'
-		resolution = '71'
-	elif quality == '360p':
-		video_format = '106'
-		resolution = '60'
-	elif quality == '480p':
-		video_format = '106'
-		resolution = '61'
-	elif quality == '720p':
-		video_format = '106'
-		resolution = '62'
-	elif quality == '1080p':
-		video_format = '108'
-		resolution = '80'
-	elif quality == 'highest':
+
+	global video_format
+	global resolution
+	try:
+		quality = config.get('SETTINGS', 'video_quality')
+		if quality == 'android': #doesn't work?
+			video_format = '107'
+			resolution = '71'
+		elif quality == '360p':
+			video_format = '106'
+			resolution = '60'
+		elif quality == '480p':
+			video_format = '106'
+			resolution = '61'
+		elif quality == '720p':
+			video_format = '106'
+			resolution = '62'
+		elif quality == '1080p':
+			video_format = '108'
+			resolution = '80'
+		elif quality == 'highest':
+			video_format = '0'
+			resolution = '0'
+	except:
 		video_format = '0'
 		resolution = '0'
+
 	global lang
-	lang = config.get('SETTINGS', 'language')
-	if lang == 'Espanol_Espana':
-		lang = 'Espanol (Espana)'
-	elif lang == 'Francais':
-		lang = 'Francais (France)'
-	elif lang == 'Portugues':
-		lang = 'Portugues (Brasil)'
-	elif lang == 'English':
+	try:
+		lang = config.get('SETTINGS', 'language')
+		if lang == 'Espanol_Espana':
+			lang = 'Espanol (Espana)'
+		elif lang == 'Francais':
+			lang = 'Francais (France)'
+		elif lang == 'Portugues':
+			lang = 'Portugues (Brasil)'
+		elif lang == 'English':
+			lang = 'English|English (US)'
+	except:
 		lang = 'English|English (US)'
 
 def playerRev (url):
@@ -134,9 +155,12 @@ def vidurl(url): #experimental, although it does help if you only know the progr
 		return url
 
 def main():
-	print 'Booting up...'
+	try:
+		page_url = sys.argv[1]
+	except IndexError:
+		sys.exit(usage)
+
 	config()
-	page_url = sys.argv[1]
 	#http://www.crunchyroll.com/miss-monochrome-the-animation/episode-2-645085
 	#page_url = 'http://www.crunchyroll.com/media-645085'
 	if page_url.startswith('www'):
