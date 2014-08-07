@@ -20,7 +20,7 @@ def argparser():
     parser = argparse.ArgumentParser(
         description='Crunchyroll video downloader')
     parser.add_argument(
-        dest='url', nargs='?', action='store', metavar='URL',
+        dest='url', nargs='*', action='store', metavar='URL',
         help='Video url from Crunchyroll to download')
     parser.add_argument(
         '-l', '--login', action='store_true', default=0,
@@ -69,9 +69,10 @@ def main():
             login.create_cookies()
             print 'Cookies created successfuly!'
 
-    if args.url:
-        config(config_path)
-        getVideo(args.url)
+
+    config(config_path)
+    for video in args.url:
+        getVideo(video)
 
 if __name__ == '__main__':
     main()
