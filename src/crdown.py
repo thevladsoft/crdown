@@ -1,11 +1,16 @@
 import argparse
+import os
 import sys
 from getpass import getpass
 from distutils.util import strtobool
 
-from crunchy import downloader
-from crunchy import login
+from appdirs import user_config_dir
 
+from crunchy.downloader import config,getVideo
+from crunchy.login import CrunchyLogin
+
+__author__ = 'Thiago Kenji Okada'
+__appname__ = 'crdown'
 __version__ = '0.1'
 
 
@@ -43,12 +48,17 @@ def main():
     # Parse the user choices
     args = parser.parse_args()
 
+    config_path = user_config_dir(__appname__)
+    if not os.path.exists(config_path):
+        os.mkdir(config_path)
+    login = CrunchyLogin(config_path)
+
     if args.login:
         if yes_no_query('Do you have a Crunchyroll login?'):
             username = raw_input('Crunchyroll username: ')
             password = getpass('Crunchyroll password: ')
             login.create_cookies()
-            result = login.login(username, password)
+            result = login.try_login(username, password)
             if result:
                 print 'Login successful!'
             else:
@@ -58,7 +68,8 @@ def main():
             print 'Cookies created successfuly!'
 
     if args.url:
-        downloader.getVideo(args.url)
+        config(config_path)
+        getVideo(args.url)
 
 if __name__ == '__main__':
     main()

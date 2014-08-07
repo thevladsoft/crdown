@@ -18,12 +18,12 @@ from unidecode import unidecode
 from crunchy.decoder import crunchyDec
 # I hate unicode, bring on python 3.3
 
-def config ():
+def config(config_path):
 	config = SafeConfigParser(
 		defaults={'video_quality':'highest',
 		'language':'English',
 		'result_path':'./export'})
-	config.read('settings.ini')
+	config.read(config_path + '/settings.ini')
 
 	global video_format
 	global resolution
@@ -59,7 +59,7 @@ def config ():
 		lang = 'English|English (US)'
 
 	global result_path
-	result_path = config.get('DEFAULT', 'result_path')
+	result_path = os.path.expanduser(config.get('DEFAULT', 'result_path'))
 
 def playerRev (url):
 	global html
@@ -151,7 +151,6 @@ def vidurl(url): #experimental, although it does help if you only know the progr
 		return url
 
 def getVideo(page_url):
-	config()
 	#http://www.crunchyroll.com/miss-monochrome-the-animation/episode-2-645085
 	#page_url = 'http://www.crunchyroll.com/media-645085'
 	if page_url.startswith('www'):
