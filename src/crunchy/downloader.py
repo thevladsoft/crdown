@@ -9,10 +9,11 @@ import urllib
 import urllib2
 import shutil
 import subprocess
-from bs4 import BeautifulSoup
 from ConfigParser import SafeConfigParser
-from unidecode import unidecode
 from urlparse import urlparse
+
+from bs4 import BeautifulSoup
+from unidecode import unidecode
 
 from crunchy.decoder import crunchyDec
 # I hate unicode, bring on python 3.3
