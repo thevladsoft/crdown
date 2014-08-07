@@ -10,7 +10,7 @@ import urllib2
 import shutil
 import subprocess
 from bs4 import BeautifulSoup
-from ConfigParser import ConfigParser
+from ConfigParser import SafeConfigParser
 from unidecode import unidecode
 from urlparse import urlparse
 
@@ -18,48 +18,47 @@ from crunchy.decoder import crunchyDec
 # I hate unicode, bring on python 3.3
 
 def config ():
-	config = ConfigParser()
+	config = SafeConfigParser(
+		defaults={'video_quality':'highest',
+		'language':'English',
+		'result_path':'./export'})
 	config.read('settings.ini')
 
 	global video_format
 	global resolution
-	try:
-		quality = config.get('SETTINGS', 'video_quality')
-		if quality == 'android': #doesn't work?
-			video_format = '107'
-			resolution = '71'
-		elif quality == '360p':
-			video_format = '106'
-			resolution = '60'
-		elif quality == '480p':
-			video_format = '106'
-			resolution = '61'
-		elif quality == '720p':
-			video_format = '106'
-			resolution = '62'
-		elif quality == '1080p':
-			video_format = '108'
-			resolution = '80'
-		elif quality == 'highest':
-			video_format = '0'
-			resolution = '0'
-	except:
+	quality = config.get('DEFAULT', 'video_quality')
+	if quality == 'android': #doesn't work?
+		video_format = '107'
+		resolution = '71'
+	elif quality == '360p':
+		video_format = '106'
+		resolution = '60'
+	elif quality == '480p':
+		video_format = '106'
+		resolution = '61'
+	elif quality == '720p':
+		video_format = '106'
+		resolution = '62'
+	elif quality == '1080p':
+		video_format = '108'
+		resolution = '80'
+	elif quality == 'highest':
 		video_format = '0'
 		resolution = '0'
 
 	global lang
-	try:
-		lang = config.get('SETTINGS', 'language')
-		if lang == 'Espanol_Espana':
-			lang = 'Espanol (Espana)'
-		elif lang == 'Francais':
-			lang = 'Francais (France)'
-		elif lang == 'Portugues':
-			lang = 'Portugues (Brasil)'
-		elif lang == 'English':
-			lang = 'English|English (US)'
-	except:
+	lang = config.get('DEFAULT', 'language')
+	if lang == 'Espanol_Espana':
+		lang = 'Espanol (Espana)'
+	elif lang == 'Francais':
+		lang = 'Francais (France)'
+	elif lang == 'Portugues':
+		lang = 'Portugues (Brasil)'
+	elif lang == 'English':
 		lang = 'English|English (US)'
+
+	global result_path
+	result_path = config.get('DEFAULT', 'result_path')
 
 def playerRev (url):
 	global html
@@ -151,8 +150,6 @@ def vidurl(url): #experimental, although it does help if you only know the progr
 		return url
 
 def getVideo(page_url):
-	if not os.path.exists('./export'):
-		os.makedirs('./export')
 	config()
 	#http://www.crunchyroll.com/miss-monochrome-the-animation/episode-2-645085
 	#page_url = 'http://www.crunchyroll.com/media-645085'
@@ -236,7 +233,7 @@ def getVideo(page_url):
 			subfile = open(title+'.ass', 'wb')
 		subfile.write(formattedSubs.encode('utf-8-sig'))
 		subfile.close()
-		shutil.move(title+'.ass', './export')
+		shutil.move(title+'.ass', result_path)
 
 	#---------------
 
@@ -258,5 +255,5 @@ def getVideo(page_url):
 			else:
 				print 'Video failed to download, trying again. ({}/3)'.format(i)
 		else:
-			shutil.move(title+'.flv', './export')
+			shutil.move(title+'.flv', result_path)
 			break
