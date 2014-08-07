@@ -8,6 +8,7 @@ import sys
 import urllib
 import urllib2
 import shutil
+import subprocess
 from bs4 import BeautifulSoup
 from ConfigParser import ConfigParser
 from unidecode import unidecode
@@ -243,8 +244,8 @@ def getVideo(page_url):
 	cmd = 'rtmpdump -r "'+url1+'" -a "'+url2+'" -f "WIN 11,8,800,50" -m 15 -W "http://static.ak.crunchyroll.com/flash/'+player_revision+'/ChromelessPlayerApp.swf" -p "'+page_url+'" -y "'+file+'" -o "'+title+'.flv"'
 
 	for i in range(4):
-		os.system(cmd)
-		if os.stat(title+'.flv').st_size == 0:
+		status = subprocess.call(cmd, shell=True)
+		if status != 0:
 			if i == 3: 
 				if os.path.exists('error.log'):
 					file = open('error.log', 'a')

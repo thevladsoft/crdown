@@ -1,6 +1,7 @@
 import argparse
 import sys
 from getpass import getpass
+from distutils.util import strtobool
 
 from crunchy import downloader
 from crunchy import login
@@ -19,6 +20,14 @@ def argparser():
     		version=version_info)
     return parser
 
+def yes_no_query(question):
+    print('{} (y/n)'.format(question))
+    while True:
+        try:
+            return strtobool(raw_input().lower())
+        except ValueError:
+            print("Please respond with 'y' or 'n'.")
+
 def main():
 	#If no option is given, show help and exit
     parser = argparser()
@@ -29,13 +38,18 @@ def main():
     args = parser.parse_args()
 
     if args.login:
-    	username = raw_input('Crunchyroll username: ')
-    	password = getpass('Crunchyroll password: ')
-    	result = login.login(username, password)
-    	if result:
-    		print 'Login successful!'
-    	else:
-    		sys.exit('Login failure!')
+        if yes_no_query('Do you have a Crunchyroll login?'):
+            username = raw_input('Crunchyroll username: ')
+            password = getpass('Crunchyroll password: ')
+            login.create_cookies()
+            result = login.login(username, password)
+            if result:
+                print 'Login successful!'
+            else:
+                sys.exit('Login failure!')
+        else:
+            login.create_cookies()
+            print 'Cookies created successfuly!'
 
     if args.url:
     	downloader.getVideo(args.url)

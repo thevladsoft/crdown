@@ -7,6 +7,10 @@ import fileinput
 import sys
 import re
 
+def create_cookies():
+	cookie_jar = cookielib.MozillaCookieJar('cookies.txt')
+	cookie_jar.save()
+
 def login(username,password):
 	cookie_jar = cookielib.MozillaCookieJar('cookies.txt')
 	cookie_jar.load()
