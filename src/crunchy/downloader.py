@@ -11,6 +11,7 @@ import shutil
 import subprocess
 from ConfigParser import SafeConfigParser
 from urlparse import urlparse
+from tempfile import mkdtemp
 
 from bs4 import BeautifulSoup
 from unidecode import unidecode
@@ -227,22 +228,23 @@ def getVideo(page_url):
 				print 'The video\'s subtitles cannot be found, or are region-locked.'
 				hardcoded = True
 
+	tmpdir = mkdtemp() + '/'
 	if hardcoded == False:
 		xmlsub = getXML('RpcApiSubtitle_GetXml', sub_id)
 		formattedSubs = crunchyDec().returnSubs(xmlsub)
 		try:
-			subfile = open(title+'.ass', 'wb')
+			subfile = open(tmpdir+title+'.ass', 'wb')
 		except IOError:
 			title = title.split(' - ', 1)[0] #episode name too long, splitting after episode number
-			subfile = open(title+'.ass', 'wb')
+			subfile = open(tmpdir+title+'.ass', 'wb')
 		subfile.write(formattedSubs.encode('utf-8-sig'))
 		subfile.close()
-		shutil.move(title+'.ass', result_path)
+		shutil.move(tmpdir+title+'.ass', result_path)
 
 	#---------------
 
 	print 'Downloading video...'
-	cmd = 'rtmpdump -r "'+url1+'" -a "'+url2+'" -f "WIN 11,8,800,50" -m 15 -W "http://static.ak.crunchyroll.com/flash/'+player_revision+'/ChromelessPlayerApp.swf" -p "'+page_url+'" -y "'+file+'" -o "'+title+'.flv"'
+	cmd = 'rtmpdump -r "'+url1+'" -a "'+url2+'" -f "WIN 11,8,800,50" -m 15 -W "http://static.ak.crunchyroll.com/flash/'+player_revision+'/ChromelessPlayerApp.swf" -p "'+page_url+'" -y "'+file+'" -o "'+tmpdir+title+'.flv"'
 
 	for i in range(retry+1):
 		status = subprocess.call(cmd, shell=True)
@@ -254,10 +256,11 @@ def getVideo(page_url):
 					file = open('error.log', 'w')
 				file.write(page_url+'\n')
 				file.close()
-				os.remove(title+'.flv')
+				os.remove(tmpdir+title+'.flv')
 				sys.exit('Video failed to download. Check error.log for details...')
 			else:
 				print 'Video failed to download, trying again. ({}/{})'.format(i+1,retry)
 		else:
-			shutil.move(title+'.flv', result_path)
+			shutil.move(tmpdir+title+'.flv', result_path)
 			break
+	shutil.rmtree(tmpdir)
