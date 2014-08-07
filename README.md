@@ -34,21 +34,23 @@ $ sudo apt-get install rtmpdump # Debian/Ubuntu and derivates
 $ sudo pacman -S rtmpdump # Arch Linux
 ```
 
-After that, you will need to install the Python requirements. They're listed on 'requirements.txt' file, that is compatible with Python's 'pip' package manager. But since cryptopy is not available on PyPi, you'll need to install it separately. Just run the following commands:
+After that you need to install 'crdown' per se. The easiest way to do it is using 'pip'. This downloads and installs this project from PyPi, completely automagically (excluding for system dependencies). The only problem it's not always up-to-date. Just run the following command:
 ```
-$ sudo pip install http://sourceforge.net/projects/cryptopy/files/latest/download
-$ sudo pip install -r requirements.txt
-$ python crdown.py URL
+$ sudo pip install crdown
 ```
 
-**Optional but recommended**: instead of running the pip commands as root it's better to create a isolated virtual environment so you don't mess with your system Python. To do so, install the python2-virtualenv package and do the following:
+If you do want to install manually, you will first need to install the Python requirements. They're listed on 'requirements.txt' file, that is compatible with Python's 'pip' package manager. Just run the following commands:
+```
+$ sudo pip install -r requirements.txt
+$ git clone https://github.com/m45t3r/crdown.git
+```
+
+**Optional but recommended**: instead of running the pip commands as root (using sudo) it's better to create a isolated virtual environment so you don't mess with your system Python. To do so, install the python2-virtualenv package and do the following:
 ```
 $ virtualenv2 crdown
 $ cd crdown
 $ source bin/activate # You should run this command after every new terminal you open
-$ pip install http://sourceforge.net/projects/cryptopy/files/latest/download
-$ pip install -r requirements.txt
-$ python crdown.py URL
+$ pip install crdown
 ```
 
 **Aditional dependencies to 'convert.sh' script**: you will need 'ffmpeg' and 'mkvtoolnix' installed to run the MKV conversion script. Some distribution commands to install both:
@@ -57,5 +59,12 @@ $ sudo apt-get install ffmpeg mkvtoolnix # Debian/Ubuntu and derivates
 $ sudo pacman -S ffmpeg mkvtoolnix # Arch Linux
 ```
 
+### Disclaimer
+
+This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit  [this page][3] or see the included LICENSE.txt file.
+
+The software is provided "AS IS", without any warranty, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. The author(s) will not be liable for any special, incidental, consequential or indirect damages due to loss of data or any other reason. This is a free tool for educational (yes, educational >.>) use only.
+
 [1]: http://www.darkztar.com/forum/showthread.php?219034-Ripping-videos-amp-subtitles-from-Crunchyroll-(noob-friendly)
 [2]: http://www.crunchyroll.com/
+[3]: http://creativecommons.org/licenses/by-sa/3.0/deed.en_US
