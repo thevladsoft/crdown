@@ -22,7 +22,8 @@ def config(config_path):
 	config = SafeConfigParser(
 		defaults={'video_quality':'highest',
 		'language':'English',
-		'result_path':'./export'})
+		'result_path':'./export',
+		'retry':'3'})
 	config.read(config_path + '/settings.ini')
 
 	global video_format
@@ -60,6 +61,9 @@ def config(config_path):
 
 	global result_path
 	result_path = os.path.expanduser(config.get('DEFAULT', 'result_path'))
+
+	global retry
+	retry = int(config.get('DEFAULT', 'retry'))
 
 def playerRev (url):
 	global html
@@ -240,10 +244,10 @@ def getVideo(page_url):
 	print 'Downloading video...'
 	cmd = 'rtmpdump -r "'+url1+'" -a "'+url2+'" -f "WIN 11,8,800,50" -m 15 -W "http://static.ak.crunchyroll.com/flash/'+player_revision+'/ChromelessPlayerApp.swf" -p "'+page_url+'" -y "'+file+'" -o "'+title+'.flv"'
 
-	for i in range(4):
+	for i in range(retry+1):
 		status = subprocess.call(cmd, shell=True)
 		if status != 0:
-			if i == 3: 
+			if i == retry+1: 
 				if os.path.exists('error.log'):
 					file = open('error.log', 'a')
 				else:
@@ -253,7 +257,7 @@ def getVideo(page_url):
 				os.remove(title+'.flv')
 				sys.exit('Video failed to download. Check error.log for details...')
 			else:
-				print 'Video failed to download, trying again. ({}/3)'.format(i)
+				print 'Video failed to download, trying again. ({}/{})'.format(i+1,retry)
 		else:
 			shutil.move(title+'.flv', result_path)
 			break
