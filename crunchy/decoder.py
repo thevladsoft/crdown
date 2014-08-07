@@ -1,10 +1,15 @@
-import gzip, lxml, math, sha, zlib
-from Base64Decoder import Base64Decoder
+import gzip
+import lxml
+import math
+import sha
+import zlib
 from binascii import hexlify, unhexlify
 from bs4 import BeautifulSoup
-from Common import Common
 from crypto.cipher.aes_cbc import AES_CBC
 from crypto.cipher.base import noPadding, padWithPadLen
+
+from utils.base64 import Base64Decoder
+from utils.common import Common
 
 class crunchyDec:
 	def __init__(self):
