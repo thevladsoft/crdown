@@ -19,7 +19,10 @@ from unidecode import unidecode
 from crunchy.decoder import crunchyDec
 # I hate unicode, bring on python 3.3
 
-def config(config_path):
+def config(path):
+	global config_path
+	config_path = os.path.abspath(path)
+
 	config = SafeConfigParser(
 		defaults={'video_quality':'highest',
 		'language':'English',
@@ -62,6 +65,8 @@ def config(config_path):
 
 	global result_path
 	result_path = os.path.expanduser(config.get('DEFAULT', 'result_path'))
+	if not os.path.isdir(result_path):
+		sys.exit("Path {} don't exist or isn't a directory!".format(result_path))
 
 	global retry
 	retry = int(config.get('DEFAULT', 'retry'))
@@ -102,7 +107,7 @@ def getXML (req, media_id):
 		data = {'req' : 'RpcApiVideoPlayer_GetStandardConfig','media_id' : media_id,'video_format' : video_format,'video_quality' : resolution,'auto_play' : '1','show_pop_out_controls' : '1','current_page' : 'http://www.crunchyroll.com/'}
 	else:
 		data = {'req' : req, 'media_id' : media_id, 'video_format' : video_format, 'video_encode_quality' : resolution}
-	cookie_jar = cookielib.MozillaCookieJar('cookies.txt')
+	cookie_jar = cookielib.MozillaCookieJar(config_path + '/cookies.txt')
 	cookie_jar.load()
 	cookie = urllib2.HTTPCookieProcessor(cookie_jar)
 	try:

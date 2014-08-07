@@ -9,14 +9,14 @@ import re
 
 class CrunchyLogin():
 	def __init__(self, config_path):
-		self.config_path = config_path
+		self.cookies_path = config_path + '/cookies.txt'
 
 	def create_cookies(self):
-		cookie_jar = cookielib.MozillaCookieJar(self.config_path + '/cookies.txt')
+		cookie_jar = cookielib.MozillaCookieJar(self.cookies_path)
 		cookie_jar.save()
 
 	def try_login(self,username,password):
-		cookie_jar = cookielib.MozillaCookieJar(self.config_path + '/cookies.txt')
+		cookie_jar = cookielib.MozillaCookieJar(self.cookies_path)
 		cookie_jar.load()
 
 		# Logging in
@@ -41,7 +41,7 @@ class CrunchyLogin():
 		if re.search(username+'(?i)',site):
 			cookie_jar.save()
 
-			for line in fileinput.input('cookies.txt',inplace =1):
+			for line in fileinput.input(self.cookies_path,inplace =1):
 				line = line.strip()
 				if not 'c_visitor' in line:
 					print line
