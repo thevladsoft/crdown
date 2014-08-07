@@ -23,7 +23,6 @@ setup(
         "Environment :: Console",
         "Operating System :: POSIX",
         "Operating System :: Microsoft :: Windows",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Multimedia :: Sound/Audio",
