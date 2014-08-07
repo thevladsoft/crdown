@@ -13,7 +13,7 @@ from crunchy.login import CrunchyLogin
 
 __author__ = 'Thiago Kenji Okada'
 __appname__ = 'crdown'
-__version__ = '0.1'
+__version__ = '0.2'
 
 
 def argparser():
