@@ -5,19 +5,21 @@
 
 This is somewhat both a port and cleanup of [Crunchyroll Downloader Toolkit DX][1] for Unix systems. Actually, it still should work on Windows too, but since compiling things using pip is not the easiest thing on Windows, if you do want to use this on Windows it's easier to just use [Crunchyroll Downloader Toolkit DX][1].
 
-It's really simple to use. First you need to (optionally but recommended) login on your account, using the following command:
+It's really simple to use. First you need to login to your account, using the following command:
 ```
-$ python2 login.py
+$ python2 crdown.py -l
 ```
 
-This will generate a 'cookies.txt' file, containing you account information. You can change the quality and language subtitle if you want editing the 'settings.ini' file.
+This will generate a 'cookies.txt' file in your configuration directory (generally '~/.config/crdown'), containing you account information. Even if you don't have a account you need to run this command at least once to generate a valid 'cookies.txt' file.
 
-After that, you should go to [Crunchyroll website][2], copy any Anime link you want (for example (this one)[http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285]) and use the following command to start the download:
+After that, you should go to [Crunchyroll website][2], copy any Anime link you want (for example [this one](http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285)) and use the following command to start the download:
 ```
 $ python2 crdown.py http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285
 ```
 
-That's it. You will see .flv and .ass files (if the subtitle is available) in the 'export/' directoy if all goes well. If you want to convert the .flv/.ass files in a nicer .mkv containerbash co, you will need some aditional dependencies (listed in "How to install" section) so you can run the following command:
+You can change some settings (like video quality, subtitle language, etc.) creating a 'settings.ini' in your configuration directory. See 'misc/settings.ini' file for an example.
+
+That's it. You will see .flv and .ass files (if the subtitle is available) in the './export/' directoy if all goes well. If you want to convert the .flv/.ass files in a nicer .mkv container, you will need some aditional dependencies (listed in "How to install" section) so you can run the following command:
 ```
 $ bash convert.sh
 ```
@@ -49,10 +51,10 @@ $ pip install -r requirements.txt
 $ python crdown.py URL
 ```
 
-**Aditional dependencies to 'convert.sh' script**: you will need 'mono' and 'mkvtoolnix' installed to run the MKV conversion script. Some distribution commands to install both:
+**Aditional dependencies to 'convert.sh' script**: you will need 'ffmpeg' and 'mkvtoolnix' installed to run the MKV conversion script. Some distribution commands to install both:
 ```
-$ sudo apt-get install mono-complete mkvtoolnix # Debian/Ubuntu and derivates
-$ sudo pacman -S mono mkvtoolnix # Arch Linux
+$ sudo apt-get install ffmpeg mkvtoolnix # Debian/Ubuntu and derivates
+$ sudo pacman -S ffmpeg mkvtoolnix # Arch Linux
 ```
 
 [1]: http://www.darkztar.com/forum/showthread.php?219034-Ripping-videos-amp-subtitles-from-Crunchyroll-(noob-friendly)
