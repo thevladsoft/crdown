@@ -13,11 +13,11 @@ for i in *.flv; do
 	# Get file name without extension
 	_filename=`basename "${i}" ".flv"`
 
-	# Split .flv in .264/.aac files. Needs mono since FLVExtractCL is a C# app
+	# Split .flv in .264/.aac files. Needs ffmpeg installed.
 	echo "Spliting video of file ${_filename}.flv"
 	ffmpeg -i "${_filename}.flv" -vcodec copy -vbsf h264_mp4toannexb "${_filename}.h264" -acodec copy "${_filename}.aac" 
 	
-	# Merge .264/.aac/.ass files in .mkv
+	# Merge .264/.aac/.ass files in .mkv. Needs mkvtoolnix installed.
 	echo "Starting mkvmerge of file ${_filename}"
 	if [ ! -f ${_filename}.ass ]; then
 		mkvmerge -o "${_filename}.mkv" "${_filename}.h264" --aac-is-sbr 0 "${_filename}.aac"
