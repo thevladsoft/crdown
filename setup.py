@@ -15,7 +15,7 @@ setup(
     url = 'https://github.com/m45t3r/crdown',
     packages=["utils", "crunchy"],
     package_dir={"":"src"},
-    scripts=['src/crdown.py'],
+    scripts=['src/crdown'],
     install_requires=("Unidecode", "appdirs", "beautifulsoup4", "cryptopy", "lxml"),
     classifiers=[
         "Development Status :: 3 - Alpha",
