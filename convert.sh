@@ -15,14 +15,14 @@ for i in *.flv; do
 
 	# Split .flv in .264/.aac files. Needs mono since FLVExtractCL is a C# app
 	echo "Spliting video of file ${_filename}.flv"
-	mono ${TOP_DIR}/bin/FLVExtractCL.exe -v -a -t -o "${_filename}.flv"
+	ffmpeg -i "${_filename}.flv" -vcodec copy -vbsf h264_mp4toannexb "${_filename}.h264" -acodec copy "${_filename}.aac" 
 	
-	echo "Starting mkvmerge of file ${_filename}"
 	# Merge .264/.aac/.ass files in .mkv
+	echo "Starting mkvmerge of file ${_filename}"
 	if [ ! -f ${_filename}.ass ]; then
-		mkvmerge -o "${_filename}.mkv" "${_filename}.264" --aac-is-sbr 0 "${_filename}.aac"
+		mkvmerge -o "${_filename}.mkv" "${_filename}.h264" --aac-is-sbr 0 "${_filename}.aac"
 	else
-		mkvmerge -o "${_filename}.mkv" "${_filename}.ass" "${_filename}.264" --aac-is-sbr 0 "${_filename}.aac"
+		mkvmerge -o "${_filename}.mkv" "${_filename}.ass" "${_filename}.h264" --aac-is-sbr 0 "${_filename}.aac"
 	fi
 done
 
