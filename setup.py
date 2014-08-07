@@ -16,7 +16,7 @@ setup(
     packages=["utils", "crunchy"],
     package_dir={"":"src"},
     scripts=['src/crdown'],
-    install_requires=("Unidecode", "appdirs", "beautifulsoup4", "cryptopy", "lxml"),
+    install_requires=("Unidecode", "appdirs", "beautifulsoup4", "pycrypto", "lxml"),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",

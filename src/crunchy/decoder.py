@@ -6,8 +6,7 @@ import zlib
 from binascii import hexlify, unhexlify
 
 from bs4 import BeautifulSoup
-from crypto.cipher.aes_cbc import AES_CBC
-from crypto.cipher.base import noPadding, padWithPadLen
+from Crypto.Cipher import AES
 
 from utils.base64 import Base64Decoder
 from utils.common import Common
@@ -90,8 +89,7 @@ class crunchyDec:
 		key = self.generateKey(id)
 		iv = Common().ByteArrayToString(Base64Decoder().decode(iv))
 		data = Common().ByteArrayToString(Base64Decoder().decode(data))
-		data = iv+data
-		cipher = AES_CBC(key, padding=noPadding(), keySize=32)
+                cipher = AES.new(key, AES.MODE_CBC, iv)
 		decryptedData = cipher.decrypt(data)
 
 		if compressed:
