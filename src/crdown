@@ -70,7 +70,6 @@ def main():
             login.create_cookies()
             print 'Cookies created successfuly!'
 
-
     for video_url in args.url:
         downloader.get_video(video_url)
 
