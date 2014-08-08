@@ -19,9 +19,13 @@ __version__ = '0.4'
 def argparser():
     parser = argparse.ArgumentParser(
         description='Crunchyroll video downloader')
-    parser.add_argument(
+    group = parser.add_argument_group('video related arguments')
+    group.add_argument(
         dest='url', nargs='*', action='store', metavar='URL',
         help='Video url from Crunchyroll to download')
+    group.add_argument(
+        '--only-subs', action='store_true', default=0,
+        help='Download subtitles only')
     parser.add_argument(
         '-l', '--login', action='store_true', default=0,
         help='Login to your Crunchyroll account')
@@ -71,7 +75,7 @@ def main():
             print 'Cookies created successfuly!'
 
     for video_url in args.url:
-        downloader.get_video(video_url)
+        downloader.get_video(video_url, args.only_subs)
 
 if __name__ == '__main__':
     main()

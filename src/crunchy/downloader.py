@@ -166,7 +166,7 @@ class CrunchyDownloader(object):
             print url
             return url
 
-    def get_video(self, page_url):
+    def get_video(self, page_url, subtitles_only=False):
         # http://www.crunchyroll.com/miss-monochrome-the-animation/episode-2-645085
         # page_url = 'http://www.crunchyroll.com/media-645085'
         if page_url.startswith('www'):
@@ -247,6 +247,10 @@ class CrunchyDownloader(object):
             subfile.write(formattedSubs.encode('utf-8-sig'))
             subfile.close()
             shutil.move(tmpdir+title+'.ass', self.result_path)
+        print 'Subtitles for "'+title+'" have been downloaded'
+        # Exit this function if user asked only for subtitles.
+        if subtitles_only:
+            return None
 
         print 'Downloading video...'
         cmd = ('rtmpdump -r "'+url1+'" -a "'+url2+'" -f "WIN 11,8,800,50" -m 15 -W '
@@ -271,3 +275,4 @@ class CrunchyDownloader(object):
                 shutil.move(tmpdir+title+'.flv', self.result_path)
                 break
         shutil.rmtree(tmpdir)
+        print 'Video "'+title+'" has been downloaded'
