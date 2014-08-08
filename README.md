@@ -19,12 +19,9 @@ $ crdown http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illy
 
 You can change some settings (like video quality, subtitle language, etc.) creating a 'settings.ini' in your configuration directory. See 'misc/settings.ini' file for an example.
 
-That's it. You will see .flv and .ass files (if the subtitle is available) in the './export/' directoy if all goes well. If you want to convert the .flv/.ass files in a nicer .mkv container, you will need some aditional dependencies (listed in "How to install" section) so you can run the following command:
-```
-$ bash misc/convert.sh
-```
+That's it. You will see .flv and .ass files (if the subtitle is available) in the './export/' directoy if all goes well. If you want to convert the .flv/.ass files in a nicer .mkv container, you will need some additional tools (see "How to install" section") to do the job. See ```misc/convert.sh``` script for an example on how to convert files.
 
-**WARNING**: for now this will delete the original .flv/.ass files. You can comment the line on 'convert.sh' script that do it if you don't want this behavior.
+**WARNING**: for now this script will delete the original .flv/.ass files. You can comment the line on 'convert.sh' script that do it if you don't want this behavior.
 
 ### How to install
 
@@ -58,6 +55,8 @@ $ pip install crdown
 $ sudo apt-get install ffmpeg mkvtoolnix # Debian/Ubuntu and derivates
 $ sudo pacman -S ffmpeg mkvtoolnix # Arch Linux
 ```
+
+Copy ```misc/convert.sh``` somewhere and make the changes to adapt to your case. The script serves as an example only, **do not** run it without studying what it does.
 
 ### Disclaimer
 
