@@ -17,6 +17,7 @@ setup(
     package_dir={"":"src"},
     scripts=['src/crdown'],
     install_requires=("Unidecode", "appdirs", "beautifulsoup4", "pycrypto", "lxml"),
+    long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
