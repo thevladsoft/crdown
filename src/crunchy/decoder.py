@@ -1,9 +1,9 @@
 import gzip
 import lxml
 import math
-import sha
 import zlib
 from binascii import hexlify, unhexlify
+from hashlib import sha1
 
 from bs4 import BeautifulSoup
 from Crypto.Cipher import AES
@@ -72,7 +72,8 @@ class crunchyDec:
         eq2 = int(math.floor(math.sqrt(6.9) * math.pow(2, 25)))
         eq3 = (mediaid ^ eq2) ^ (mediaid ^ eq2) >> 3 ^ eq1 * 32
         # Below: Creates a 160-bit SHA1 hash
-        shaHash = sha.new(self.createString([20, 97, 1, 2]) + str(eq3))
+        shaHash = sha1()
+        shaHash.update(self.createString([20, 97, 1, 2]) + str(eq3))
         finalHash = shaHash.digest()
         hashArray = Common().createByteArray(finalHash)
         # Below: Pads the 160-bit hash to 256-bit using zeroes, incase a 256-bit key is requested
