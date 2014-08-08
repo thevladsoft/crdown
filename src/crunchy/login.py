@@ -7,7 +7,7 @@ import fileinput
 import sys
 import re
 
-class CrunchyLogin():
+class CrunchyLogin(object):
 	def __init__(self, config_path):
 		self.cookies_path = config_path + '/cookies.txt'
 
@@ -15,7 +15,7 @@ class CrunchyLogin():
 		cookie_jar = cookielib.MozillaCookieJar(self.cookies_path)
 		cookie_jar.save()
 
-	def try_login(self,username,password):
+	def try_login(self, username, password):
 		cookie_jar = cookielib.MozillaCookieJar(self.cookies_path)
 		cookie_jar.load()
 
@@ -48,3 +48,4 @@ class CrunchyLogin():
 			return True
 		else:
 			return False
+
