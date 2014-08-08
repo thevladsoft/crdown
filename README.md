@@ -7,21 +7,21 @@ This is somewhat both a port and cleanup of [Crunchyroll Downloader Toolkit DX][
 
 It's really simple to use. First you need to login to your account, using the following command:
 ```
-$ python2 crdown.py -l
+$ crdown -l
 ```
 
 This will generate a 'cookies.txt' file in your configuration directory (generally '~/.config/crdown'), containing you account information. Even if you don't have a account you need to run this command at least once to generate a valid 'cookies.txt' file.
 
 After that, you should go to [Crunchyroll website][2], copy any Anime link you want (for example [this one](http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285)) and use the following command to start the download:
 ```
-$ python2 crdown.py http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285
+$ crdown http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285
 ```
 
 You can change some settings (like video quality, subtitle language, etc.) creating a 'settings.ini' in your configuration directory. See 'misc/settings.ini' file for an example.
 
 That's it. You will see .flv and .ass files (if the subtitle is available) in the './export/' directoy if all goes well. If you want to convert the .flv/.ass files in a nicer .mkv container, you will need some aditional dependencies (listed in "How to install" section) so you can run the following command:
 ```
-$ bash convert.sh
+$ bash misc/convert.sh
 ```
 
 **WARNING**: for now this will delete the original .flv/.ass files. You can comment the line on 'convert.sh' script that do it if you don't want this behavior.
