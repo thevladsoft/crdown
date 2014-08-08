@@ -11,7 +11,7 @@ It's really simple to use. First you need to login to your account, using the fo
 $ crdown -l
 ```
 
-This will generate a 'cookies.txt' file in your configuration directory (generally '~/.config/crdown'), containing you account information. Even if you don't have a account you need to run this command at least once to generate a valid 'cookies.txt' file.
+This will generate a 'cookies.txt' file in your configuration directory (generally ```~/.config/crdown```), containing you account information. Even if you don't have a account you need to run this command at least once to generate a valid 'cookies.txt' file.
 
 After that, you should go to [Crunchyroll website][2], copy any Anime link you want (for example [this one](http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285)) and use the following command to start the download:
 
