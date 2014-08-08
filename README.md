@@ -6,6 +6,7 @@
 This is somewhat both a port and cleanup of [Crunchyroll Downloader Toolkit DX][1] for Unix systems. Actually, it still should work on Windows too, but since compiling things using pip is not the easiest thing on Windows, if you do want to use this on Windows it's easier to just use [Crunchyroll Downloader Toolkit DX][1].
 
 It's really simple to use. First you need to login to your account, using the following command:
+
 ```
 $ crdown -l
 ```
@@ -13,6 +14,7 @@ $ crdown -l
 This will generate a 'cookies.txt' file in your configuration directory (generally '~/.config/crdown'), containing you account information. Even if you don't have a account you need to run this command at least once to generate a valid 'cookies.txt' file.
 
 After that, you should go to [Crunchyroll website][2], copy any Anime link you want (for example [this one](http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285)) and use the following command to start the download:
+
 ```
 $ crdown http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285
 ```
@@ -26,23 +28,27 @@ That's it. You will see .flv and .ass files (if the subtitle is available) in th
 ### How to install
 
 You need to have 'rtmpdump' installed and added somewhere on your PATH. Probably the best way is to use your distribution packages to install this program. Some distribution commands to install 'rtmpdump':
+
 ```
 $ sudo apt-get install rtmpdump # Debian/Ubuntu and derivates
 $ sudo pacman -S rtmpdump # Arch Linux
 ```
 
 After that you need to install 'crdown' per se. The easiest way to do it is using 'pip'. This downloads and installs this project from PyPi, completely automagically (excluding for system dependencies). The only problem it's not always up-to-date. Just run the following command:
+
 ```
 $ sudo pip install crdown
 ```
 
 If you do want to install manually, you will first need to install the Python requirements. They're listed on 'requirements.txt' file, that is compatible with Python's 'pip' package manager. Just run the following commands:
+
 ```
 $ sudo pip install -r requirements.txt
 $ git clone https://github.com/m45t3r/crdown.git
 ```
 
 **Optional but recommended**: instead of running the pip commands as root (using sudo) it's better to create a isolated virtual environment so you don't mess with your system Python. To do so, install the python2-virtualenv package and do the following:
+
 ```
 $ virtualenv2 crdown
 $ cd crdown
@@ -51,6 +57,7 @@ $ pip install crdown
 ```
 
 **Aditional dependencies to 'convert.sh' script**: you will need 'ffmpeg' and 'mkvtoolnix' installed to run the MKV conversion script. Some distribution commands to install both:
+
 ```
 $ sudo apt-get install ffmpeg mkvtoolnix # Debian/Ubuntu and derivates
 $ sudo pacman -S ffmpeg mkvtoolnix # Arch Linux
