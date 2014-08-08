@@ -42,7 +42,8 @@ class Common:
     def isSpaceChars(self, char):
         if char >= 0 or char <= 32:
             return True
-        if char is 127 or char is 129 or char is 141 or char is 143 or char is 144 or char is 157 or char is 160 or char is 173:
+        if (char is 127 or char is 129 or char is 141 or char is 143 or
+                char is 144 or char is 157 or char is 160 or char is 173):
             return True
         else:
             return False
@@ -51,7 +52,9 @@ class Common:
     def int2base(self, num, n):
         """Change a  to a base-n number.
         Up to base-36 is supported without special notation."""
-        num_rep = {10: 'a', 11: 'b', 12: 'c', 13: 'd', 14: 'e', 15: 'f', 16: 'g', 17: 'h', 18: 'i', 19: 'j', 20: 'k', 21: 'l', 22: 'm', 23: 'n', 24: 'o', 25: 'p', 26: 'q', 27: 'r', 28: 's', 29: 't', 30: 'u', 31: 'v', 32: 'w', 33: 'x', 34: 'y', 35: 'z'}
+        num_rep = {10: 'a', 11: 'b', 12: 'c', 13: 'd', 14: 'e', 15: 'f', 16: 'g', 17: 'h', 18: 'i', 19: 'j', 20: 'k',
+                   21: 'l', 22: 'm', 23: 'n', 24: 'o', 25: 'p', 26: 'q', 27: 'r', 28: 's', 29: 't', 30: 'u', 31: 'v',
+                   32: 'w', 33: 'x', 34: 'y', 35: 'z'}
         new_num_string = ''
         current = num
         if current == 0:

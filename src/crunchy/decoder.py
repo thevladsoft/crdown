@@ -39,17 +39,28 @@ class crunchyDec:
     def convertToASS(self, script):
         soup = BeautifulSoup(script, 'xml')
         header = soup.find('subtitle_script')
-        header = "[Script Info]\nTitle: "+header['title']+"\nScriptType: v4.00+\nWrapStyle: "+header['wrap_style']+"\nPlayResX: 656\nPlayResY: 368\n\n"
-        styles = "[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n"
+        header = ("[Script Info]\nTitle: "+header['title']+"\nScriptType: v4.00+\nWrapStyle: "+header['wrap_style'] +
+                  "\nPlayResX: 656\nPlayResY: 368\n\n")
+        styles = ("[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour," +
+                  "BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle," +
+                  "Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n")
         events = "\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
         stylelist = soup.findAll('style')
         eventlist = soup.findAll('event')
 
         for style in stylelist:
-            styles += "Style: " + style['name'] + "," + style['font_name'] + "," + style['font_size'] + "," + style['primary_colour'] + "," + style['secondary_colour'] + "," + style['outline_colour'] + "," + style['back_colour'] + "," + style['bold'] + "," + style['italic'] + "," + style['underline'] + "," + style['strikeout'] + "," + style['scale_x'] + "," + style['scale_y'] + "," + style['spacing'] + "," + style['angle'] + "," + style['border_style'] + "," + style['outline'] + "," + style['shadow'] + "," + style['alignment'] + "," + style['margin_l'] + "," + style['margin_r'] + "," + style['margin_v'] + "," + style['encoding'] + "\n"
+            styles += ("Style: " + style['name'] + "," + style['font_name'] + "," + style['font_size'] + "," +
+                       style['primary_colour'] + "," + style['secondary_colour'] + "," + style['outline_colour'] +
+                       "," + style['back_colour'] + "," + style['bold'] + "," + style['italic'] + "," +
+                       style['underline'] + "," + style['strikeout'] + "," + style['scale_x'] + "," + style['scale_y'] +
+                       "," + style['spacing'] + "," + style['angle'] + "," + style['border_style'] + "," +
+                       style['outline'] + "," + style['shadow'] + "," + style['alignment'] + "," + style['margin_l'] +
+                       "," + style['margin_r'] + "," + style['margin_v'] + "," + style['encoding'] + "\n")
 
         for event in eventlist:
-            events += "Dialogue: 0,"+event['start']+","+event['end']+","+event['style']+","+event['name']+","+event['margin_l']+","+event['margin_r']+","+event['margin_v']+","+event['effect']+","+event['text']+"\n"
+            events += ("Dialogue: 0,"+event['start']+","+event['end']+","+event['style']+","+event['name'] +
+                       ","+event['margin_l']+","+event['margin_r']+","+event['margin_v']+","+event['effect']+"," +
+                       event['text']+"\n")
 
         formattedSubs = header+styles+events
         return formattedSubs
