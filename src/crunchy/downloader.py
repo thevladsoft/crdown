@@ -17,7 +17,7 @@ import lxml
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 
-from crunchy.decoder import crunchyDec
+from crunchy.decoder import CrunchyDecoder
 # I hate unicode, bring on python 3.3
 
 
@@ -278,7 +278,7 @@ class CrunchyDownloader(object):
         tmpdir = mkdtemp()
         if not hardcoded:
             xmlsub = self.get_xml('RpcApiSubtitle_GetXml', sub_id)
-            formattedSubs = crunchyDec().returnSubs(xmlsub)
+            formattedSubs = CrunchyDecoder().return_subs(xmlsub)
             try:
                 subfile = open(tmpdir+'/'+title+'.ass', 'wb')
             except IOError:

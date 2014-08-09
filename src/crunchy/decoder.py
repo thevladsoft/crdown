@@ -11,20 +11,20 @@ from bs4 import BeautifulSoup
 from Crypto.Cipher import AES
 
 
-class crunchyDec:
+class CrunchyDecoder(object):
     def __init__(self):
         pass
 
-    def returnSubs(self, xml):
-        _id, _iv, _data = self.strainSoup(xml)
+    def return_subs(self, xml):
+        _id, _iv, _data = self.strain_soup(xml)
         print "Attempting to decrypt subtitles..."
-        decryptedSubs = self.decodeSubtitles(_id, _iv, _data)
+        decryptedSubs = self.decode_subtitles(_id, _iv, _data)
 
-        formattedSubs = self.convertToASS(decryptedSubs)
+        formattedSubs = self.convert_to_ass(decryptedSubs)
         print "Success! Subtitles decrypted."
         return formattedSubs
 
-    def strainSoup(self, xml):
+    def strain_soup(self, xml):
         soup = BeautifulSoup(xml)
         subtitle = soup.find('subtitle', attrs={'link': None})
         if subtitle:
@@ -35,7 +35,7 @@ class crunchyDec:
         else:
             print "Couldn't parse XML file."
 
-    def convertToASS(self, script):
+    def convert_to_ass(self, script):
         soup = BeautifulSoup(script, 'xml')
         header = soup.find('subtitle_script')
         header = ("[Script Info]\nTitle: "+header['title']+"\nScriptType: v4.00+\nWrapStyle: "+header['wrap_style'] +
@@ -65,14 +65,14 @@ class crunchyDec:
         return formattedSubs
 
     # ---- CRYPTO -----
-    def generateKey(self, mediaid, size=32):
+    def generate_key(self, mediaid, size=32):
         # Below: Do some black magic
         eq1 = int(int(math.floor(math.sqrt(6.9) * math.pow(2, 25))) ^ mediaid)
         eq2 = int(math.floor(math.sqrt(6.9) * math.pow(2, 25)))
         eq3 = (mediaid ^ eq2) ^ (mediaid ^ eq2) >> 3 ^ eq1 * 32
         # Below: Creates a 160-bit SHA1 hash
         shaHash = hashlib.sha1()
-        shaHash.update(self.createString([20, 97, 1, 2]) + str(eq3))
+        shaHash.update(self.create_string([20, 97, 1, 2]) + str(eq3))
         finalHash = shaHash.digest()
         hashArray = array.array('B', finalHash)
         #hashArray = Common().createByteArray(finalHash)
@@ -85,7 +85,7 @@ class crunchyDec:
             keyArray[i] = item
         return hashArray.tostring()
 
-    def createString(self, args):
+    def create_string(self, args):
         i = 0
         argArray = [args[2], args[3]]
         while(i < args[0]):
@@ -96,9 +96,9 @@ class crunchyDec:
             finalString += chr(arg % args[1] + 33)
         return finalString
 
-    def decodeSubtitles(self, id, iv, data):
+    def decode_subtitles(self, id, iv, data):
         compressed = True
-        key = self.generateKey(id)
+        key = self.generate_key(id)
         iv = base64.b64decode(iv)
         data = base64.b64decode(data)
         cipher = AES.new(key, AES.MODE_CBC, iv)
