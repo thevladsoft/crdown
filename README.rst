@@ -61,11 +61,11 @@ If you do want to install manually, you will first need to install the Python re
     $ git clone https://github.com/m45t3r/crdown.git
 
 
-**Optional but recommended**: instead of running the pip commands as root (using sudo) it's better to create a isolated virtual environment so you don't mess with your system Python. To do so, install the ``python2-virtualenv`` package and do the following:
+**Optional but recommended**: instead of running the pip commands as root (using sudo) it's better to create a isolated virtual environment so you don't mess with your system Python. To do so, install the ``python-virtualenv`` package and do the following:
 
 ::
 
-    $ virtualenv2 crdown
+    $ virtualenv crdown
     $ cd crdown
     $ source bin/activate # You should run this command after every new terminal you open
     $ pip install crdown
@@ -84,9 +84,9 @@ Copy ``misc/convert.sh`` somewhere and make the changes to adapt to your case. T
 About Python versions
 ~~~~~~~~~~~~~~~~~~~~~
 
-This program is only compatible with Python 3.x. It's only tested on Python 3.4.x but should work with anything newer than Python 3.2 (if it doesn't please report; if it's not difficult I will fix it). An older version, compatible with Python 2.7 (but not compatible with Python 3.x series) is available in branch 'python2'.
+This program is only compatible with ``Python 3.x``. It's only tested on ``Python 3.4.x`` but should work with anything newer than ``Python 3.2`` (if it doesn't please report; if it's not difficult I will fix it). An older version, compatible with ``Python 2.7`` (but not compatible with Python 3.x series) is available in branch ``python2``.
 
-Speaking of version numbers, any version <0.6 is Python 2.7 only, while versions >=0.6 is Python 3.2+ only.
+Speaking of version numbers, any version **<0.6** is ``Python 2.7`` only, while versions **>=0.6** is ``Python 3.2+`` only.
 
 Disclaimer
 ~~~~~~~~~~
