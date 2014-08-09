@@ -15,7 +15,6 @@ from bs4 import BeautifulSoup
 
 from crunchy.decoder import CrunchyDecoder
 from crunchy.common import move_ask_overwrite
-# I hate unicode, bring on python 3.3
 
 
 class CrunchyDownloader(object):
