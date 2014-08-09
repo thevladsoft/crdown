@@ -4,6 +4,7 @@ Crunchyroll video downloader
 Download your favorite anime from Crunchyroll
 ---------------------------------------------
 
+
 Introduction
 ~~~~~~~~~~~~
 
@@ -15,6 +16,7 @@ It's really simple to use. First you need to login to your account, using the fo
 
     $ crdown -l
 
+
 This will generate a 'cookies.txt' file in your configuration directory (generally ``~/.config/crdown``), containing you account information. Even if you don't have a account you need to run this command at least once to generate a valid 'cookies.txt' file.
 
 After that, you should go to `Crunchyroll website`_, copy any Anime link you want (for example `this one`_) and use the following command to start the download:
@@ -23,11 +25,13 @@ After that, you should go to `Crunchyroll website`_, copy any Anime link you wan
 
     $ crdown http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285
 
+
 You can change some settings (like video quality, subtitle language, etc.) creating a 'settings.ini' in your configuration directory. See ``misc/settings.ini`` file for an example.
 
 That's it. You will see .flv and .ass files (if the subtitle is available) in the ``./export/`` directoy if all goes well. If you want to convert the .flv/.ass files in a nicer .mkv container, you will need some additional tools (see "How to install" section) to do the job. See ``misc/convert.sh`` script for an example on how to convert files.
 
 **WARNING**: for now this script will delete the original .flv/.ass files. You can comment the line on 'convert.sh' script that do it if you don't want this behavior.
+
 
 How to install
 ~~~~~~~~~~~~~~
@@ -39,6 +43,7 @@ You need to have 'rtmpdump' installed and added somewhere on your PATH. Probably
     $ sudo apt-get install rtmpdump # Debian/Ubuntu and derivates
     $ sudo pacman -S rtmpdump # Arch Linux
 
+
 Alternatively, you can change the option ``rtmpdump_path`` in 'settings.ini'. See ``misc/settings.ini`` for details.
 
 After that you need to install 'crdown' per se. The easiest way to do it is using 'pip'. This downloads and installs this project from PyPi, completely automagically (excluding for system dependencies). The only problem it's not always up-to-date. Just run the following command:
@@ -47,12 +52,14 @@ After that you need to install 'crdown' per se. The easiest way to do it is usin
 
     $ sudo pip install crdown
 
+
 If you do want to install manually, you will first need to install the Python requirements. They're listed on 'requirements.txt' file, that is compatible with Python's 'pip' package manager. Just run the following commands:
 
 ::
 
     $ sudo pip install -r requirements.txt
     $ git clone https://github.com/m45t3r/crdown.git
+
 
 **Optional but recommended**: instead of running the pip commands as root (using sudo) it's better to create a isolated virtual environment so you don't mess with your system Python. To do so, install the ``python2-virtualenv`` package and do the following:
 
@@ -63,6 +70,7 @@ If you do want to install manually, you will first need to install the Python re
     $ source bin/activate # You should run this command after every new terminal you open
     $ pip install crdown
 
+
 **Aditional dependencies to 'convert.sh' script**: you will need 'ffmpeg' and 'mkvtoolnix' installed to run the MKV conversion script. Some distribution commands to install both:
 
 ::
@@ -70,7 +78,9 @@ If you do want to install manually, you will first need to install the Python re
     $ sudo apt-get install ffmpeg mkvtoolnix # Debian/Ubuntu and derivates
     $ sudo pacman -S ffmpeg mkvtoolnix # Arch Linux
 
+
 Copy ``misc/convert.sh`` somewhere and make the changes to adapt to your case. The script serves as an example only, **do not** run it without studying what it does.
+
 
 Disclaimer
 ~~~~~~~~~~
