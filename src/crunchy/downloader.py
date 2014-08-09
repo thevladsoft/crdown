@@ -1,20 +1,17 @@
-# -*- coding: utf-8 -*-
-
-import cookielib
+import http.cookiejar
 import os
 import re
 import sys
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import subprocess
 import shutil
-from ConfigParser import SafeConfigParser
-from urlparse import urlparse
+from configparser import SafeConfigParser
+from urllib.parse import urlparse
 from tempfile import mkdtemp
 
 import lxml
 from bs4 import BeautifulSoup
-from unidecode import unidecode
 
 from crunchy.decoder import CrunchyDecoder
 from crunchy.common import move_ask_overwrite
@@ -94,8 +91,8 @@ class CrunchyDownloader(object):
                      "your PATH or check 'rtmpdump_path' option in 'settings.ini'!".format(self.rtmpdump_path))
         
         try:
-            cookielib.MozillaCookieJar(self.config_path + '/cookies.txt').load()
-        except cookielib.LoadError:
+            http.cookiejar.MozillaCookieJar(self.config_path + '/cookies.txt').load()
+        except http.cookiejar.LoadError:
             sys.exit("Invalid 'cookies.txt' file. Run '{} -l' to remake 'cookies.txt' file.".format(sys.argv[0]))
         except IOError:
             sys.exit("Inexistent 'cookies.txt' file. Did you run '{} -l' first?".format(sys.argv[0]))
@@ -118,15 +115,15 @@ class CrunchyDownloader(object):
         urlparse(url)
         try:
             if sys.argv[2] == 'proxy':
-                opener = urllib2.build_opener(urllib2.ProxyHandler({"http": "127.0.0.1:8118"}))
+                opener = urllib.request.build_opener(urllib.request.ProxyHandler({"http": "127.0.0.1:8118"}))
             else:
-                opener = urllib2.build_opener()
+                opener = urllib.request.build_opener()
         except IndexError:
-            opener = urllib2.build_opener()
+            opener = urllib.request.build_opener()
         opener.addheaders = [('Referer', 'http://crunchyroll.com/'), ('Host', 'www.crunchyroll.com'),
                              ('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0)')]
         res = opener.open(url).read()
-        return res
+        return res.decode(encoding='UTF-8')
 
     def get_xml(self, req, media_id):
         url = 'http://www.crunchyroll.com/xml/'
@@ -139,22 +136,22 @@ class CrunchyDownloader(object):
         else:
             data = {'req': req, 'media_id': media_id, 'video_format': self.video_format,
                     'video_encode_quality': self.resolution}
-        cookie_jar = cookielib.MozillaCookieJar(self.config_path + '/cookies.txt')
+        cookie_jar = http.cookiejar.MozillaCookieJar(self.config_path + '/cookies.txt')
         cookie_jar.load()
-        cookie = urllib2.HTTPCookieProcessor(cookie_jar)
+        cookie = urllib.request.HTTPCookieProcessor(cookie_jar)
         try:
             if sys.argv[2] == 'proxy':
-                opener = urllib2.build_opener(urllib2.ProxyHandler({"http": "127.0.0.1:8118"}), cookie)
+                opener = urllib.request.build_opener(urllib.request.ProxyHandler({"http": "127.0.0.1:8118"}), cookie)
             else:
-                opener = urllib2.build_opener(cookie)
+                opener = urllib.request.build_opener(cookie)
         except IndexError:
-            opener = urllib2.build_opener(cookie)
+            opener = urllib.request.build_opener(cookie)
         opener.addheaders = [('Referer', 'http://static.ak.crunchyroll.com/flash/' +
                               self.player_revision+'/StandardVideoPlayer.swf'),
                              ('Host', 'www.crunchyroll.com'), ('Content-type', 'application/x-www-form-urlencoded'),
                              ('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0)')]
-        req = urllib2.Request(url, urllib.urlencode(data))
-        res = opener.open(req).read()
+        req = urllib.request.Request(url, urllib.parse.urlencode(data).encode(encoding='UTF-8'))
+        res = opener.open(req).read().decode(encoding='UTF-8')
         return res
 
     def video_url(self, url):  # Experimental, although it does help if you only know the program page.
@@ -163,10 +160,10 @@ class CrunchyDownloader(object):
                            'small-margin-bottom" title="(.+?)"', res)
         if slist != []:  # Multiple seasons
             if len(re.findall('<a href=".+episode-(01|1)-(.+?)"', res)) > 1:  # dirty hack, I know
-                print list(reversed(slist))
-                seasonnum = int(raw_input('Season number: '))
+                print(list(reversed(slist)))
+                seasonnum = int(input('Season number: '))
                 # seasonnum = sys.argv[3]
-                epnum = raw_input('Episode number: ')
+                epnum = input('Episode number: ')
                 # epnum = sys.argv[2]
                 seasonnum = slist[seasonnum]
                 if url.endswith('/'):
@@ -176,24 +173,24 @@ class CrunchyDownloader(object):
                     return url+'/'+re.findall('<a href=".+episode-(0'+epnum+'|'+epnum+')-(.+?)"',
                                               res)[slist.index(seasonnum)][1]
             else:
-                print list(reversed(re.findall('<a href=".+episode-(.+?)-', res)))
-                epnum = raw_input('Episode number: ')
+                print(list(reversed(re.findall('<a href=".+episode-(.+?)-', res))))
+                epnum = input('Episode number: ')
                 # epnum = sys.argv[2]
                 if url.endswith('/'):
                     url = url+re.findall('<a href=".+episode-(0'+epnum+'|'+epnum+')-(.+?)"', res).pop()[1]
                 else:
                     url = url+'/'+re.findall('<a href=".+episode-(0'+epnum+'|'+epnum+')-(.+?)"', res).pop()[1]
-                print url
+                print(url)
                 return url
         else:
-            print re.findall('<a href=".+episode-(.+?)-', res)
-            epnum = raw_input('Episode number: ')
+            print(re.findall('<a href=".+episode-(.+?)-', res))
+            epnum = input('Episode number: ')
             # epnum = sys.argv[2]
             if url.endswith('/'):
                 url = url+re.findall('<a href=".+episode-(0'+epnum+'|'+epnum+')-(.+?)"', res).pop()[1]
             else:
                 url = url+'/'+re.findall('<a href=".+episode-(0'+epnum+'|'+epnum+')-(.+?)"', res).pop()[1]
-            print url
+            print(url)
             return url
 
     def get_video(self, page_url, subtitles_only=False):
@@ -214,20 +211,19 @@ class CrunchyDownloader(object):
         xmlconfig = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
         # xmlmeta = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
         if '<code>4</code>' in xmlconfig:  # This is in VideoEncode_GetStreamInfo, but better to nip it in the bud early
-            print 'Video not available in your region.'
+            print('Video not available in your region.')
             sys.exit()
         vid_id = xmlconfig.find('media_id').string
 
-        title = unicode((re.findall('<title>(.+?)</title>',
-                         self.get_html(page_url)).pop().replace('Crunchyroll - Watch ', '')), encoding='utf-8')
-        title = unidecode(title).replace('/', ' - ').replace(':', '-').replace('?', '.').replace('"', '\'').strip()
+        title = re.findall('<title>(.+?)</title>', self.get_html(page_url)).pop().replace('Crunchyroll - Watch ', '')
+        title = title.replace('/', ' - ').replace(':', '-').replace('?', '.').replace('"', '\'').strip()
 
         # Normally 'RpcApiVideoEncode_GetStreamInfo' but some episodes f*ck up and show 1080p no matter the settings
         # xmlstream = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
         try:
             host = xmlconfig.find('host').string
         except AttributeError:
-            print 'Downloading 2 minute preview.'
+            print('Downloading 2 minute preview.')
             # xmlmeta = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
             media_id = xmlconfig.find('media_id').string
             xmlconfig = BeautifulSoup(self.get_xml('RpcApiVideoEncode_GetStreamInfo', media_id), 'xml')
@@ -245,11 +241,11 @@ class CrunchyDownloader(object):
             url2 = re.findall('ondemand/.+', host).pop()
         filename = xmlconfig.find('file').string
 
-        xmllist = unidecode(unicode(self.get_xml('RpcApiSubtitle_GetListing', media_id), 'utf-8'))  # Unicode plz?
+        xmllist = self.get_xml('RpcApiSubtitle_GetListing', media_id)
         xmllist = xmllist.replace('><', '>\n<')
 
         if '<media_id>None</media_id>' in xmllist:
-            print 'The video has hardcoded subtitles.'
+            print('The video has hardcoded subtitles.')
             hardcoded = True
         else:
             try:
@@ -259,10 +255,10 @@ class CrunchyDownloader(object):
             except IndexError:
                 try:
                     sub_id = re.findall("id\=([0-9]+)' title='.+English", xmllist).pop()  # Default back to English
-                    print 'Language not found, reverting to English'
+                    print('Language not found, reverting to English')
                     hardcoded = False
                 except IndexError:
-                    print 'The video\'s subtitles cannot be found, or are region-locked.'
+                    print('The video\'s subtitles cannot be found, or are region-locked.')
                     hardcoded = True
 
         tmpdir = mkdtemp()
@@ -277,12 +273,12 @@ class CrunchyDownloader(object):
             subfile.write(formattedSubs.encode('utf-8-sig'))
             subfile.close()
             move_ask_overwrite(tmpdir+'/'+title+'.ass', self.result_path+'/'+title+'.ass')
-        print 'Subtitles for "'+title+'" have been downloaded'
+        print('Subtitles for "'+title+'" have been downloaded')
         # Exit this function if user asked only for subtitles.
         if subtitles_only:
             return None
 
-        print 'Downloading video...'
+        print('Downloading video...')
         cmd = [self.rtmpdump_path, '-r', url1, '-a', url2, '-f', 'WIN 11,8,800,50', '-m', '15', '-W',
                'http://static.ak.crunchyroll.com/flash/'+self.player_revision+'/ChromelessPlayerApp.swf',
                '-p', page_url, '-y', filename, '-o', tmpdir+'/'+title+'.flv']
@@ -292,13 +288,13 @@ class CrunchyDownloader(object):
             try:
                 ret = subprocess.check_call(cmd)
                 move_ask_overwrite(tmpdir+'/'+title+'.flv', self.result_path+'/'+title+'.flv')
-                print 'Video "'+title+'" has been downloaded'
+                print('Video "'+title+'" has been downloaded')
                 break
             except subprocess.CalledProcessError:
                 if i < self.retry:
-                    print 'Video failed to download, trying again. ({}/{})'.format(i+1, self.retry)
+                    print('Video failed to download, trying again. ({}/{})'.format(i+1, self.retry))
                 else:
-                    print 'Video failed to download. Cleaning up...'
+                    print('Video failed to download. Cleaning up...')
                     os.remove(tmpdir+'/'+title+'.flv')
 
         shutil.rmtree(tmpdir)

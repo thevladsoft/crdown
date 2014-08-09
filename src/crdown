@@ -53,17 +53,17 @@ def main():
 
     if args.login:
         if yes_no_query('Do you have a Crunchyroll login?'):
-            username = raw_input('Crunchyroll username: ')
+            username = input('Crunchyroll username: ')
             password = getpass('Crunchyroll password: ')
             login.create_cookies()
             result = login.try_login(username, password)
             if result:
-                print 'Login successful!'
+                print('Login successful!')
             else:
                 sys.exit('Login failure!')
         else:
             login.create_cookies()
-            print 'Cookies created successfuly!'
+            print('Cookies created successfuly!')
 
     for video_url in args.url:
         downloader.get_video(video_url, args.only_subs)

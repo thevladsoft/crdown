@@ -7,7 +7,7 @@ def yes_no_query(question):
     sys.stdout.write('{} (y/n) '.format(question)),
     while True:
         try:
-            return strtobool(raw_input().lower())
+            return strtobool(input().lower())
         except ValueError:
             print("Please respond with 'y' or 'n'.")
 

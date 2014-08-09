@@ -17,11 +17,11 @@ class CrunchyDecoder(object):
 
     def return_subs(self, xml):
         _id, _iv, _data = self.strain_soup(xml)
-        print "Attempting to decrypt subtitles..."
+        print("Attempting to decrypt subtitles...")
         decryptedSubs = self.decode_subtitles(_id, _iv, _data)
 
         formattedSubs = self.convert_to_ass(decryptedSubs)
-        print "Success! Subtitles decrypted."
+        print("Success! Subtitles decrypted.")
         return formattedSubs
 
     def strain_soup(self, xml):
@@ -33,7 +33,7 @@ class CrunchyDecoder(object):
             _data = subtitle.data.string
             return _id, _iv, _data
         else:
-            print "Couldn't parse XML file."
+            print("Couldn't parse XML file.")
 
     def convert_to_ass(self, script):
         soup = BeautifulSoup(script, 'xml')
@@ -72,7 +72,8 @@ class CrunchyDecoder(object):
         eq3 = (mediaid ^ eq2) ^ (mediaid ^ eq2) >> 3 ^ eq1 * 32
         # Below: Creates a 160-bit SHA1 hash
         shaHash = hashlib.sha1()
-        shaHash.update(self.create_string([20, 97, 1, 2]) + str(eq3))
+        stringHash = self.create_string([20, 97, 1, 2]) + str(eq3)
+        shaHash.update(stringHash.encode(encoding='UTF-8'))
         finalHash = shaHash.digest()
         hashArray = array.array('B', finalHash)
         # Below: Pads the 160-bit hash to 256-bit using zeroes, incase a 256-bit key is requested
