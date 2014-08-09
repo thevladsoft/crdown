@@ -6,38 +6,19 @@ import re
 import sys
 import urllib
 import urllib2
-import shutil
 import subprocess
 from ConfigParser import SafeConfigParser
 from urlparse import urlparse
 from tempfile import mkdtemp
-from distutils.util import strtobool
 
 import lxml
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 
 from crunchy.decoder import CrunchyDecoder
+from crunchy.common import move_ask_overwrite
 # I hate unicode, bring on python 3.3
 
-
-def move_ask_overwrite(src, dest):
-    if os.path.exists(dest):
-        sys.stdout.write("File '{}' already exists. Overwrite file? (y/n) ".format(dest))
-
-        res = 0
-        while True:
-            try:
-                res = strtobool(raw_input().lower())
-                break
-            except ValueError:
-                print("Please respond with 'y' or 'n'.")
-        if res:
-            os.remove(dest)
-        else:
-            sys.exit('Bye bye!')
-    
-    shutil.move(src, dest)
 
 class CrunchyDownloader(object):
 
@@ -238,7 +219,7 @@ class CrunchyDownloader(object):
             host = xmlconfig.find('host').string
         except AttributeError:
             print 'Downloading 2 minute preview.'
-        #   xmlmeta = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
+            # xmlmeta = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
             media_id = xmlconfig.find('media_id').string
             xmlconfig = BeautifulSoup(self.get_xml('RpcApiVideoEncode_GetStreamInfo', media_id), 'xml')
             try:

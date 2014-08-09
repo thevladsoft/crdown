@@ -75,7 +75,6 @@ class CrunchyDecoder(object):
         shaHash.update(self.create_string([20, 97, 1, 2]) + str(eq3))
         finalHash = shaHash.digest()
         hashArray = array.array('B', finalHash)
-        #hashArray = Common().createByteArray(finalHash)
         # Below: Pads the 160-bit hash to 256-bit using zeroes, incase a 256-bit key is requested
         padding = [0]*4*3
         hashArray.extend(padding)
