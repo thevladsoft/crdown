@@ -7,6 +7,7 @@ import sys
 import urllib
 import urllib2
 import subprocess
+import shutil
 from ConfigParser import SafeConfigParser
 from urlparse import urlparse
 from tempfile import mkdtemp
