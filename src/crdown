@@ -37,7 +37,7 @@ def argparser():
 
 
 def yes_no_query(question):
-    print('{} (y/n)'.format(question))
+    sys.stdout.write('{} (y/n) '.format(question)),
     while True:
         try:
             return strtobool(raw_input().lower())

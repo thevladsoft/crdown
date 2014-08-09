@@ -12,6 +12,7 @@ import subprocess
 from ConfigParser import SafeConfigParser
 from urlparse import urlparse
 from tempfile import mkdtemp
+from distutils.util import strtobool
 
 from bs4 import BeautifulSoup
 from unidecode import unidecode
@@ -19,6 +20,24 @@ from unidecode import unidecode
 from crunchy.decoder import crunchyDec
 # I hate unicode, bring on python 3.3
 
+
+def move_ask_overwrite(src, dest):
+    if os.path.exists(dest):
+        sys.stdout.write("File '{}' already exists. Overwrite file? (y/n) ".format(dest))
+
+        res = 0
+        while True:
+            try:
+                res = strtobool(raw_input().lower())
+                break
+            except ValueError:
+                print("Please respond with 'y' or 'n'.")
+        if res:
+            os.remove(dest)
+        else:
+            sys.exit('Bye bye!')
+    
+    shutil.move(src, dest)
 
 class CrunchyDownloader(object):
 
@@ -213,7 +232,7 @@ class CrunchyDownloader(object):
         else:
             url1 = re.findall('.+/ondemand/', host).pop()
             url2 = re.findall('ondemand/.+', host).pop()
-        file = xmlconfig.find('file').string
+        filename = xmlconfig.find('file').string
 
         xmllist = unidecode(unicode(self.get_xml('RpcApiSubtitle_GetListing', media_id), 'utf-8'))  # Unicode plz?
         xmllist = xmllist.replace('><', '>\n<')
@@ -235,44 +254,41 @@ class CrunchyDownloader(object):
                     print 'The video\'s subtitles cannot be found, or are region-locked.'
                     hardcoded = True
 
-        tmpdir = mkdtemp() + '/'
+        tmpdir = mkdtemp()
         if not hardcoded:
             xmlsub = self.get_xml('RpcApiSubtitle_GetXml', sub_id)
             formattedSubs = crunchyDec().returnSubs(xmlsub)
             try:
-                subfile = open(tmpdir+title+'.ass', 'wb')
+                subfile = open(tmpdir+'/'+title+'.ass', 'wb')
             except IOError:
                 title = title.split(' - ', 1)[0]  # Episode name too long, splitting after episode number
-                subfile = open(tmpdir+title+'.ass', 'wb')
+                subfile = open(tmpdir+'/'+title+'.ass', 'wb')
             subfile.write(formattedSubs.encode('utf-8-sig'))
             subfile.close()
-            shutil.move(tmpdir+title+'.ass', self.result_path)
+            move_ask_overwrite(tmpdir+'/'+title+'.ass', self.result_path+'/'+title+'.ass')
         print 'Subtitles for "'+title+'" have been downloaded'
         # Exit this function if user asked only for subtitles.
         if subtitles_only:
             return None
 
         print 'Downloading video...'
-        cmd = ('rtmpdump -r "'+url1+'" -a "'+url2+'" -f "WIN 11,8,800,50" -m 15 -W '
-               '"http://static.ak.crunchyroll.com/flash/'+self.player_revision+'/ChromelessPlayerApp.swf" -p "' +
-               page_url+'" -y "'+file+'" -o "'+tmpdir+title+'.flv"')
+        cmd = ['rtmpdump', '-r', url1, '-a', url2, '-f', 'WIN 11,8,800,50', '-m', '15', '-W',
+               'http://static.ak.crunchyroll.com/flash/'+self.player_revision+'/ChromelessPlayerApp.swf',
+               '-p', page_url, '-y', filename, '-o', tmpdir+'/'+title+'.flv']
 
+        ret = 0
         for i in range(self.retry+1):
-            status = subprocess.call(cmd, shell=True)
-            if status != 0:
-                if i == self.retry+1:
-                    if os.path.exists('error.log'):
-                        file = open('error.log', 'a')
-                    else:
-                        file = open('error.log', 'w')
-                    file.write(page_url+'\n')
-                    file.close()
-                    os.remove(tmpdir+title+'.flv')
-                    sys.exit('Video failed to download. Check error.log for details...')
-                else:
-                    print 'Video failed to download, trying again. ({}/{})'.format(i+1, self.retry)
-            else:
-                shutil.move(tmpdir+title+'.flv', self.result_path)
+            try:
+                ret = subprocess.check_call(cmd)
+                move_ask_overwrite(tmpdir+'/'+title+'.flv', self.result_path+'/'+title+'.flv')
+                print 'Video "'+title+'" has been downloaded'
                 break
+            except subprocess.CalledProcessError:
+                if i < self.retry:
+                    print 'Video failed to download, trying again. ({}/{})'.format(i+1, self.retry)
+                else:
+                    print 'Video failed to download. Cleaning up...'
+                    os.remove(tmpdir+'/'+title+'.flv')
+
         shutil.rmtree(tmpdir)
-        print 'Video "'+title+'" has been downloaded'
+        sys.exit(ret)
