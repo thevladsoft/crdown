@@ -39,6 +39,8 @@ You need to have 'rtmpdump' installed and added somewhere on your PATH. Probably
     $ sudo apt-get install rtmpdump # Debian/Ubuntu and derivates
     $ sudo pacman -S rtmpdump # Arch Linux
 
+Alternatively, you can change the option ``rtmpdump_path`` in 'settings.ini'. See ``misc/settings.ini`` for details.
+
 After that you need to install 'crdown' per se. The easiest way to do it is using 'pip'. This downloads and installs this project from PyPi, completely automagically (excluding for system dependencies). The only problem it's not always up-to-date. Just run the following command:
 
 ::

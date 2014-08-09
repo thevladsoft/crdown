@@ -46,11 +46,17 @@ class CrunchyDownloader(object):
         self.config()
 
     def config(self):
+        # Windows doesn't support binaries without .exe extension, sigh...
+        rtmpdump_bin = 'rtmpdump'
+        if sys.platform.startswith('win32'):
+            rtmpdump_bin = 'rtmpdump.exe'
+
         config = SafeConfigParser(
             defaults={'video_quality': 'highest',
                       'language': 'English',
                       'result_path': './export',
-                      'retry': '3'})
+                      'retry': '3',
+                      'rtmpdump_path': rtmpdump_bin})
         config.read(self.config_path + '/settings.ini')
 
         quality = config.get('DEFAULT', 'video_quality')
@@ -88,6 +94,13 @@ class CrunchyDownloader(object):
             sys.exit("Path {} don't exist or isn't a directory!".format(self.result_path))
 
         self.retry = int(config.get('DEFAULT', 'retry'))
+
+        self.rtmpdump_path = os.path.expanduser(config.get('DEFAULT', 'rtmpdump_path'))
+        try:
+            # rtmpdump doesn't have a --version, sigh... At least -h return 0.
+            subprocess.check_output([self.rtmpdump_path, '-h'], stderr=subprocess.STDOUT)
+        except OSError:
+            sys.exit("Could not start rtmpdump on path '{}'".format(self.rtmpdump_path))
 
     def player_revision(self, url):
         html = self.get_html(url)
@@ -272,7 +285,7 @@ class CrunchyDownloader(object):
             return None
 
         print 'Downloading video...'
-        cmd = ['rtmpdump', '-r', url1, '-a', url2, '-f', 'WIN 11,8,800,50', '-m', '15', '-W',
+        cmd = [self.rtmpdump_path, '-r', url1, '-a', url2, '-f', 'WIN 11,8,800,50', '-m', '15', '-W',
                'http://static.ak.crunchyroll.com/flash/'+self.player_revision+'/ChromelessPlayerApp.swf',
                '-p', page_url, '-y', filename, '-o', tmpdir+'/'+title+'.flv']
 
