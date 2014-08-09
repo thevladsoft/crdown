@@ -78,6 +78,8 @@ class CrunchyDownloader(object):
         elif quality == 'highest':
             self.video_format = '0'
             self.resolution = '0'
+        else:
+            sys.exit("Invalid 'video_quality' option in 'settings.ini'!")
 
         lang = config.get('DEFAULT', 'language')
         if lang == 'Espanol_Espana':
@@ -88,19 +90,25 @@ class CrunchyDownloader(object):
             self.lang = 'Portugues (Brasil)'
         elif lang == 'English':
             self.lang = 'English|English (US)'
+        else:
+            sys.exit("Invalid 'language' option in 'settings.ini'!")
 
         self.result_path = os.path.expanduser(config.get('DEFAULT', 'result_path'))
         if not os.path.isdir(self.result_path):
             sys.exit("Path {} don't exist or isn't a directory!".format(self.result_path))
 
-        self.retry = int(config.get('DEFAULT', 'retry'))
+        try:    
+            self.retry = int(config.get('DEFAULT', 'retry'))
+        except ValueError:
+            sys.exit("Invalid 'retry' option in 'settings.ini!'")
 
         self.rtmpdump_path = os.path.expanduser(config.get('DEFAULT', 'rtmpdump_path'))
         try:
             # rtmpdump doesn't have a --version, sigh... At least -h return 0.
             subprocess.check_output([self.rtmpdump_path, '-h'], stderr=subprocess.STDOUT)
         except OSError:
-            sys.exit("Could not start rtmpdump on path '{}'".format(self.rtmpdump_path))
+            sys.exit("Could not start 'rtmpdump' from path '{}'. Check if 'rtmpdump' is installed "
+                     "and in your PATH or check 'rtmpdump_path' option in 'settings.ini'!".format(self.rtmpdump_path))
 
     def player_revision(self, url):
         html = self.get_html(url)
