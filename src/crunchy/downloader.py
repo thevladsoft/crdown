@@ -85,12 +85,20 @@ class CrunchyDownloader(object):
             sys.exit("Invalid 'retry' option in 'settings.ini!'")
 
         self.rtmpdump_path = os.path.expanduser(config.get('DEFAULT', 'rtmpdump_path'))
+        
         try:
             # rtmpdump doesn't have a --version, sigh... At least -h return 0.
             subprocess.check_output([self.rtmpdump_path, '-h'], stderr=subprocess.STDOUT)
         except OSError:
-            sys.exit("Could not start 'rtmpdump' from path '{}'. Check if 'rtmpdump' is installed "
-                     "and in your PATH or check 'rtmpdump_path' option in 'settings.ini'!".format(self.rtmpdump_path))
+            sys.exit("Could not start 'rtmpdump' from path '{}'. Check if 'rtmpdump' is installed and is in "
+                     "your PATH or check 'rtmpdump_path' option in 'settings.ini'!".format(self.rtmpdump_path))
+        
+        try:
+            cookielib.MozillaCookieJar(self.config_path + '/cookies.txt').load()
+        except cookielib.LoadError:
+            sys.exit("Invalid 'cookies.txt' file. Run '{} -l' to remake 'cookies.txt' file.".format(sys.argv[0]))
+        except IOError:
+            sys.exit("Inexistent 'cookies.txt' file. Did you run '{} -l' first?".format(sys.argv[0]))
 
     def player_revision(self, url):
         html = self.get_html(url)
