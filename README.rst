@@ -90,7 +90,15 @@ page`_ or see the included LICENSE.txt file.
 
 The software is provided "AS IS", without any warranty, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. The author(s) will not be liable for any special, incidental, consequential or indirect damages due to loss of data or any other reason. This is a free tool for educational (yes, educational >.>) use only.
 
+Credits
+~~~~~~~
+
+This project is based on `Crunchyroll Downloader Toolkit DX`_ from *einstein95*, with some modifications and removal of any specific Windows features (like use of '.bat' files, hardcoded program paths and inclusion of binary .exe programs on the package). Thanks *einstein95* for making this program possible!
+
+A list containing the credits from the original project can be found on `this forum post`_. Probably they all helped this project in one way or another, so thanks for all of them too!
+
 .. _`Crunchyroll Downloader Toolkit DX`: http://www.darkztar.com/forum/showthread.php?219034-Ripping-videos-amp-subtitles-from-Crunchyroll-(noob-friendly)
 .. _`Crunchyroll website`: http://www.crunchyroll.com/
 .. _`this one`: http://www.crunchyroll.com/fatekaleid-liner-prisma-illya/episode-1-illya-grow-up-657285
 .. _`this page`: http://creativecommons.org/licenses/by-sa/3.0/deed.en_US
+.. _`this forum post`: http://www.darkztar.com/forum/showthread.php?219034-Ripping-videos-amp-subtitles-from-Crunchyroll-(noob-friendly)&p=2155949&viewfull=1#post2155949
