@@ -81,6 +81,12 @@ If you do want to install manually, you will first need to install the Python re
 
 Copy ``misc/convert.sh`` somewhere and make the changes to adapt to your case. The script serves as an example only, **do not** run it without studying what it does.
 
+About Python versions
+~~~~~~~~~~~~~~~~~~~~~
+
+This program is only compatible with Python 3.x. It's only tested on Python 3.4.x but should work with anything newer than Python 3.2 (if it doesn't please report; if it's not difficult I will fix it). An older version, compatible with Python 2.7 (but not compatible with Python 3.x series) is available in branch 'python2'.
+
+Speaking of version numbers, any version <0.6 is Python 2.7 only, while versions >=0.6 is Python 3.2+ only.
 
 Disclaimer
 ~~~~~~~~~~
