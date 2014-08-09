@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name = "crdown",
-    version = "0.5.4",
+    version = "0.6.0",
     author = "Thiago Kenji Okada",
     author_email = "thiago.mast3r@gmail.com",
     description = ("Crunchyroll video downloader."),
@@ -24,7 +24,9 @@ setup(
         "Environment :: Console",
         "Operating System :: POSIX",
         "Operating System :: Microsoft :: Windows",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Multimedia :: Sound/Audio",
         "Topic :: Multimedia :: Video",
