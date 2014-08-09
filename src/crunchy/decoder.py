@@ -2,14 +2,13 @@ import gzip
 import lxml
 import math
 import zlib
+import base64
+import hashlib
+import array
 from binascii import hexlify, unhexlify
-from hashlib import sha1
 
 from bs4 import BeautifulSoup
 from Crypto.Cipher import AES
-
-from utils.base64 import Base64Decoder
-from utils.common import Common
 
 
 class crunchyDec:
@@ -22,7 +21,7 @@ class crunchyDec:
         decryptedSubs = self.decodeSubtitles(_id, _iv, _data)
 
         formattedSubs = self.convertToASS(decryptedSubs)
-        print "Success!  Subtitles decrypted."
+        print "Success! Subtitles decrypted."
         return formattedSubs
 
     def strainSoup(self, xml):
@@ -72,10 +71,11 @@ class crunchyDec:
         eq2 = int(math.floor(math.sqrt(6.9) * math.pow(2, 25)))
         eq3 = (mediaid ^ eq2) ^ (mediaid ^ eq2) >> 3 ^ eq1 * 32
         # Below: Creates a 160-bit SHA1 hash
-        shaHash = sha1()
+        shaHash = hashlib.sha1()
         shaHash.update(self.createString([20, 97, 1, 2]) + str(eq3))
         finalHash = shaHash.digest()
-        hashArray = Common().createByteArray(finalHash)
+        hashArray = array.array('B', finalHash)
+        #hashArray = Common().createByteArray(finalHash)
         # Below: Pads the 160-bit hash to 256-bit using zeroes, incase a 256-bit key is requested
         padding = [0]*4*3
         hashArray.extend(padding)
@@ -83,7 +83,7 @@ class crunchyDec:
         # Below: Create a string of the requested key size
         for i, item in enumerate(hashArray[:size]):
             keyArray[i] = item
-        return Common().ByteArrayToString(keyArray)
+        return hashArray.tostring()
 
     def createString(self, args):
         i = 0
@@ -99,8 +99,8 @@ class crunchyDec:
     def decodeSubtitles(self, id, iv, data):
         compressed = True
         key = self.generateKey(id)
-        iv = Common().ByteArrayToString(Base64Decoder().decode(iv))
-        data = Common().ByteArrayToString(Base64Decoder().decode(data))
+        iv = base64.b64decode(iv)
+        data = base64.b64decode(data)
         cipher = AES.new(key, AES.MODE_CBC, iv)
         decryptedData = cipher.decrypt(data)
 
