@@ -13,7 +13,7 @@ setup(
     license = "Creative Commons Attribution-ShareAlike 3.0 Unported",
     keywords = "video crunchyroll downloader",
     url = 'https://github.com/m45t3r/crdown',
-    packages=["utils", "crunchy"],
+    packages=["crunchy"],
     package_dir={"":"src"},
     scripts=['src/crdown'],
     install_requires=("Unidecode", "appdirs", "beautifulsoup4", "pycrypto", "lxml"),
