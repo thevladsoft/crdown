@@ -1,5 +1,4 @@
 import gzip
-import lxml
 import math
 import zlib
 import base64
@@ -7,6 +6,7 @@ import hashlib
 import array
 from binascii import hexlify, unhexlify
 
+import lxml
 from bs4 import BeautifulSoup
 from Crypto.Cipher import AES
 

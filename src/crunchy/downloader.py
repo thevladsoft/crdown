@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import cookielib
-import lxml
 import os
 import re
 import sys
@@ -14,6 +13,7 @@ from urlparse import urlparse
 from tempfile import mkdtemp
 from distutils.util import strtobool
 
+import lxml
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 
