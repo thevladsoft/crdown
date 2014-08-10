@@ -14,7 +14,7 @@ from crunchy.common import yes_no_query
 
 __author__ = 'Thiago Kenji Okada'
 __appname__ = 'crdown'
-__version__ = '0.6.2'
+__version__ = '0.6.3'
 
 
 def argparser():
