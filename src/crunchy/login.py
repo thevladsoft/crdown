@@ -28,7 +28,7 @@ class CrunchyLogin(object):
         url = 'https://www.crunchyroll.com/?a=formhandler'
         data = {'formname': 'RpcApiUser_Login', 'fail_url': 'http://www.crunchyroll.com/login',
                 'name': username, 'password': password}
-        req = urllib.request.Request(url, urllib.parse.urlencode(data))
+        req = urllib.request.Request(url, urllib.parse.urlencode(data).encode(encoding='UTF-8'))
         res = opener.open(req)
 
         # Checking if login is succesful
@@ -37,7 +37,7 @@ class CrunchyLogin(object):
                              ('Connection', 'keep-alive')]
         url = 'http://www.crunchyroll.com/'
         req = opener.open(url)
-        site = req.read()
+        site = req.read().decode(encoding='UTF-8')
 
         if re.search(username+'(?i)', site):
             cookie_jar.save()
