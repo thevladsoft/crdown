@@ -5,10 +5,9 @@ import sys
 import urllib.request, urllib.parse, urllib.error
 import urllib.request, urllib.error, urllib.parse
 import subprocess
-import shutil
 from configparser import SafeConfigParser
 from urllib.parse import urlparse
-from tempfile import mkdtemp
+from tempfile import TemporaryDirectory
 
 import lxml
 from bs4 import BeautifulSoup
@@ -261,41 +260,37 @@ class CrunchyDownloader(object):
                     print('The video\'s subtitles cannot be found, or are region-locked.')
                     hardcoded = True
 
-        tmpdir = mkdtemp()
-        if not hardcoded:
-            xmlsub = self.get_xml('RpcApiSubtitle_GetXml', sub_id)
-            formattedSubs = CrunchyDecoder().return_subs(xmlsub)
-            try:
-                subfile = open(os.path.join(tmpdir, title+'.ass'), 'wb')
-            except IOError:
-                title = title.split(' - ', 1)[0]  # Episode name too long, splitting after episode number
-                subfile = open(os.path.join(tmpdir, title+'.ass'), 'wb')
-            subfile.write(formattedSubs.encode('utf-8-sig'))
-            subfile.close()
-            move_ask_overwrite(subfile.name, os.path.join(self.result_path, title+'.ass'))
-        print('Subtitles for "'+title+'" have been downloaded')
-        # Exit this function if user asked only for subtitles.
-        if subtitles_only:
-            return None
+        with TemporaryDirectory() as tmpdir:
+            if not hardcoded:
+                xmlsub = self.get_xml('RpcApiSubtitle_GetXml', sub_id)
+                formattedSubs = CrunchyDecoder().return_subs(xmlsub)
+                try:
+                    with open(os.path.join(tmpdir, title+'.ass'), 'wb') as subfile:
+                        subfile.write(formattedSubs.encode('utf-8-sig'))
+                except IOError:
+                    title = title.split(' - ', 1)[0]  # Episode name too long, splitting after episode number
+                    with open(os.path.join(tmpdir, title+'.ass'), 'wb') as subfile:
+                        subfile.write(formattedSubs.encode('utf-8-sig'))
+                move_ask_overwrite(subfile.name, os.path.join(self.result_path, title+'.ass'))
+            print("Subtitles for '{}' have been downloaded".format(title))
+            # Exit this function if user asked only for subtitles.
+            if subtitles_only:
+                return None
 
-        print('Downloading video...')
-        video_path = os.path.join(tmpdir, title+'.flv')
-        cmd = [self.rtmpdump_path, '-r', url1, '-a', url2, '-f', 'WIN 11,8,800,50', '-m', '15', '-W',
-               'http://static.ak.crunchyroll.com/flash/'+self.player_revision+'/ChromelessPlayerApp.swf',
-               '-p', page_url, '-y', filename, '-o', video_path]
+            print('Downloading video...')
+            video_path = os.path.join(tmpdir, title+'.flv')
+            cmd = [self.rtmpdump_path, '-r', url1, '-a', url2, '-f', 'WIN 11,8,800,50', '-m', '15', '-W',
+                   'http://static.ak.crunchyroll.com/flash/'+self.player_revision+'/ChromelessPlayerApp.swf',
+                   '-p', page_url, '-y', filename, '-o', video_path]
 
-        ret = 0
-        for i in range(self.retry+1):
-            try:
-                ret = subprocess.check_call(cmd)
-                move_ask_overwrite(video_path, os.path.join(self.result_path, title+'.flv'))
-                print('Video "'+title+'" has been downloaded')
-                break
-            except subprocess.CalledProcessError:
-                if i < self.retry:
-                    print('Video failed to download, trying again. ({}/{})'.format(i+1, self.retry))
-                else:
-                    print('Video failed to download too many times. Giving up...')
-
-        shutil.rmtree(tmpdir)
-        sys.exit(ret)
+            for i in range(self.retry+1):
+                try:
+                    subprocess.check_call(cmd)
+                    move_ask_overwrite(video_path, os.path.join(self.result_path, title+'.flv'))
+                    print("Video '{}' has been downloaded".format(title))
+                    break
+                except subprocess.CalledProcessError:
+                    if i < self.retry:
+                        print('Video failed to download, trying again. ({}/{})'.format(i+1, self.retry))
+                    else:
+                        sys.exit('Video failed to download too many times. Giving up...')
