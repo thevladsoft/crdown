@@ -96,21 +96,22 @@ class CrunchyDownloader(object):
         except IOError:
             sys.exit("Inexistent '{0}' file. Did you run '{1} -l' first?".format(cookies_file, sys.argv[0]))
 
-    def player_revision(self, url):
-        html = self.get_html(url)
+    def _get_player_revision(self, url):
+        html = self._get_html(url)
         try:
-            self.player_revision = re.findall(r'flash\\/(.+)\\/StandardVideoPlayer.swf', html).pop()
+            player_revision = re.findall(r'flash\\/(.+)\\/StandardVideoPlayer.swf', html).pop()
         except IndexError:
             url = url+'?skip_wall=1'  # Perv
-            html = self.get_html(url)
+            html = self._get_html(url)
             try:
-                self.player_revision = re.findall(r'flash\\/(.+)\\/StandardVideoPlayer.swf', html).pop()
+                player_revision = re.findall(r'flash\\/(.+)\\/StandardVideoPlayer.swf', html).pop()
             except IndexError:
                 # Update every so often, only used when the original page is region-locked
                 # In these cases you can use a proxy like Tor
-                self.player_revision = '20140102185427.932a69b4165d0ca944236b7ca43ae8e5'
+                player_revision = '20140102185427.932a69b4165d0ca944236b7ca43ae8e5'
+        return player_revision
 
-    def get_html(self, url):
+    def _get_html(self, url):
         urlparse(url)
         try:
             if sys.argv[2] == 'proxy':
@@ -124,7 +125,7 @@ class CrunchyDownloader(object):
         res = opener.open(url).read()
         return res.decode(encoding='UTF-8')
 
-    def get_xml(self, req, media_id):
+    def _get_xml(self, req, media_id):
         url = 'http://www.crunchyroll.com/xml/'
         if req == 'RpcApiSubtitle_GetXml':
             data = {'req': 'RpcApiSubtitle_GetXml', 'subtitle_script_id': media_id}
@@ -153,8 +154,8 @@ class CrunchyDownloader(object):
         res = opener.open(req).read().decode(encoding='UTF-8')
         return res
 
-    def video_url(self, url):  # Experimental, although it does help if you only know the program page.
-        res = self.get_html(url)
+    def _get_video_url(self, url):  # Experimental, although it does help if you only know the program page.
+        res = self._get_html(url)
         slist = re.findall('<a href="#" class="season-dropdown content-menu block text-link strong(?: open| ) '
                            'small-margin-bottom" title="(.+?)"', res)
         if slist != []:  # Multiple seasons
@@ -204,28 +205,28 @@ class CrunchyDownloader(object):
             try:
                 int(page_url[-6:])
             except ValueError:
-                page_url = video_url(page_url)
-        self.player_revision(page_url)
+                page_url = self._get_video_url(page_url)
+        self.player_revision = self._get_player_revision(page_url)
         media_id = page_url[-6:]
-        xmlconfig = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
-        # xmlmeta = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
+        xmlconfig = BeautifulSoup(self._get_xml('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
+        # xmlmeta = BeautifulSoup(self._get_xml('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
         if '<code>4</code>' in xmlconfig:  # This is in VideoEncode_GetStreamInfo, but better to nip it in the bud early
             print('Video not available in your region.')
             sys.exit()
         vid_id = xmlconfig.find('media_id').string
 
-        title = re.findall('<title>(.+?)</title>', self.get_html(page_url)).pop().replace('Crunchyroll - Watch ', '')
+        title = re.findall('<title>(.+?)</title>', self._get_html(page_url)).pop().replace('Crunchyroll - Watch ', '')
         title = title.replace('/', ' - ').replace(':', '-').replace('?', '.').replace('"', '\'').strip()
 
         # Normally 'RpcApiVideoEncode_GetStreamInfo' but some episodes f*ck up and show 1080p no matter the settings
-        # xmlstream = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
+        # xmlstream = BeautifulSoup(self._get_xml('RpcApiVideoPlayer_GetStandardConfig', media_id), 'xml')
         try:
             host = xmlconfig.find('host').string
         except AttributeError:
             print('Downloading 2 minute preview.')
-            # xmlmeta = BeautifulSoup(self.get_xml('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
+            # xmlmeta = BeautifulSoup(self._get_xml('RpcApiVideoPlayer_GetMediaMetadata', media_id), 'xml')
             media_id = xmlconfig.find('media_id').string
-            xmlconfig = BeautifulSoup(self.get_xml('RpcApiVideoEncode_GetStreamInfo', media_id), 'xml')
+            xmlconfig = BeautifulSoup(self._get_xml('RpcApiVideoEncode_GetStreamInfo', media_id), 'xml')
             try:
                 host = xmlconfig.find('host').string
             except AttributeError:
@@ -240,7 +241,7 @@ class CrunchyDownloader(object):
             url2 = re.findall('ondemand/.+', host).pop()
         filename = xmlconfig.find('file').string
 
-        xmllist = self.get_xml('RpcApiSubtitle_GetListing', media_id)
+        xmllist = self._get_xml('RpcApiSubtitle_GetListing', media_id)
         xmllist = xmllist.replace('><', '>\n<')
 
         if '<media_id>None</media_id>' in xmllist:
@@ -262,7 +263,7 @@ class CrunchyDownloader(object):
 
         with TemporaryDirectory() as tmpdir:
             if not hardcoded:
-                xmlsub = self.get_xml('RpcApiSubtitle_GetXml', sub_id)
+                xmlsub = self._get_xml('RpcApiSubtitle_GetXml', sub_id)
                 formattedSubs = CrunchyDecoder().return_subs(xmlsub)
                 try:
                     with open(os.path.join(tmpdir, title+'.ass'), 'wb') as subfile:
