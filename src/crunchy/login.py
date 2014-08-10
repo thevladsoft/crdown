@@ -4,11 +4,12 @@ import urllib2
 import fileinput
 import sys
 import re
+import os
 
 
 class CrunchyLogin(object):
     def __init__(self, config_path):
-        self.cookies_path = config_path + '/cookies.txt'
+        self.cookies_path = os.path.join(config_path, 'cookies.txt')
 
     def create_cookies(self):
         cookie_jar = cookielib.MozillaCookieJar(self.cookies_path)

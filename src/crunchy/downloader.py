@@ -39,7 +39,7 @@ class CrunchyDownloader(object):
                       'result_path': './export',
                       'retry': '3',
                       'rtmpdump_path': rtmpdump_bin})
-        config.read(self.config_path + '/settings.ini')
+        config.read(os.path.join(self.config_path, 'settings.ini'))
 
         quality = config.get('DEFAULT', 'video_quality')
         if quality == 'android':  # Doesn't work?
@@ -85,7 +85,6 @@ class CrunchyDownloader(object):
             sys.exit("Invalid 'retry' option in 'settings.ini!'")
 
         self.rtmpdump_path = os.path.expanduser(config.get('DEFAULT', 'rtmpdump_path'))
-        
         try:
             # rtmpdump doesn't have a --version, sigh... At least -h return 0.
             subprocess.check_output([self.rtmpdump_path, '-h'], stderr=subprocess.STDOUT)
@@ -94,11 +93,13 @@ class CrunchyDownloader(object):
                      "your PATH or check 'rtmpdump_path' option in 'settings.ini'!".format(self.rtmpdump_path))
         
         try:
-            cookielib.MozillaCookieJar(self.config_path + '/cookies.txt').load()
+            cookies_file = 'cookies.txt'
+            self.cookies_path = os.path.join(self.config_path, cookies_file)
+            cookielib.MozillaCookieJar(self.cookies_path).load()
         except cookielib.LoadError:
-            sys.exit("Invalid 'cookies.txt' file. Run '{} -l' to remake 'cookies.txt' file.".format(sys.argv[0]))
+            sys.exit("Invalid '{0}' file. Run '{1} -l' to remake '{0}' file.".format(cookies_file, sys.argv[0]))
         except IOError:
-            sys.exit("Inexistent 'cookies.txt' file. Did you run '{} -l' first?".format(sys.argv[0]))
+            sys.exit("Inexistent '{0}' file. Did you run '{1} -l' first?".format(cookies_file, sys.argv[0]))
 
     def player_revision(self, url):
         html = self.get_html(url)
@@ -139,7 +140,7 @@ class CrunchyDownloader(object):
         else:
             data = {'req': req, 'media_id': media_id, 'video_format': self.video_format,
                     'video_encode_quality': self.resolution}
-        cookie_jar = cookielib.MozillaCookieJar(self.config_path + '/cookies.txt')
+        cookie_jar = cookielib.MozillaCookieJar(self.cookies_path)
         cookie_jar.load()
         cookie = urllib2.HTTPCookieProcessor(cookie_jar)
         try:
@@ -270,28 +271,29 @@ class CrunchyDownloader(object):
             xmlsub = self.get_xml('RpcApiSubtitle_GetXml', sub_id)
             formattedSubs = CrunchyDecoder().return_subs(xmlsub)
             try:
-                subfile = open(tmpdir+'/'+title+'.ass', 'wb')
+                subfile = open(os.path.join(tmpdir, title+'.ass'), 'wb')
             except IOError:
                 title = title.split(' - ', 1)[0]  # Episode name too long, splitting after episode number
-                subfile = open(tmpdir+'/'+title+'.ass', 'wb')
+                subfile = open(os.path.join(tmpdir, title+'.ass'), 'wb')
             subfile.write(formattedSubs.encode('utf-8-sig'))
             subfile.close()
-            move_ask_overwrite(tmpdir+'/'+title+'.ass', self.result_path+'/'+title+'.ass')
+            move_ask_overwrite(subfile.name, os.path.join(self.result_path, title+'.ass'))
         print 'Subtitles for "'+title+'" have been downloaded'
         # Exit this function if user asked only for subtitles.
         if subtitles_only:
             return None
 
         print 'Downloading video...'
+        video_path = os.path.join(tmpdir, title+'.flv')
         cmd = [self.rtmpdump_path, '-r', url1, '-a', url2, '-f', 'WIN 11,8,800,50', '-m', '15', '-W',
                'http://static.ak.crunchyroll.com/flash/'+self.player_revision+'/ChromelessPlayerApp.swf',
-               '-p', page_url, '-y', filename, '-o', tmpdir+'/'+title+'.flv']
+               '-p', page_url, '-y', filename, '-o', video_path]
 
         ret = 0
         for i in range(self.retry+1):
             try:
                 ret = subprocess.check_call(cmd)
-                move_ask_overwrite(tmpdir+'/'+title+'.flv', self.result_path+'/'+title+'.flv')
+                move_ask_overwrite(video_path, os.path.join(self.result_path, title+'.flv'))
                 print 'Video "'+title+'" has been downloaded'
                 break
             except subprocess.CalledProcessError:
@@ -299,7 +301,6 @@ class CrunchyDownloader(object):
                     print 'Video failed to download, trying again. ({}/{})'.format(i+1, self.retry)
                 else:
                     print 'Video failed to download. Cleaning up...'
-                    os.remove(tmpdir+'/'+title+'.flv')
 
         shutil.rmtree(tmpdir)
         sys.exit(ret)
