@@ -31,7 +31,7 @@ class CrunchyDownloader(object):
         config = SafeConfigParser(
             defaults={'video_quality': 'highest',
                       'language': 'English',
-                      'result_path': './export',
+                      'result_path': '.',
                       'retry': '3',
                       'rtmpdump_path': rtmpdump_bin})
         config.read(os.path.join(self.config_path, 'settings.ini'))
